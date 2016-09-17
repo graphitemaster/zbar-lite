@@ -24,9 +24,7 @@
 #include <config.h>
 #include <stdlib.h>     /* strtol */
 #include <string.h>     /* strchr, strncmp, strlen */
-#ifdef HAVE_ERRNO_H
-# include <errno.h>
-#endif
+#include <errno.h>
 
 #include <zbar.h>
 
@@ -149,7 +147,7 @@ int zbar_parse_config (const char *cfgstr,
         *cfg = ZBAR_CFG_UNCERTAINTY;
     else if(!strncmp(cfgstr, "position", len))
         *cfg = ZBAR_CFG_POSITION;
-    else 
+    else
         return(1);
 
     if(eq) {
