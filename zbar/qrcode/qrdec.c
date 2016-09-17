@@ -17,7 +17,6 @@
 #include "binarize.h"
 #include "image.h"
 #include "error.h"
-#include "svg.h"
 
 typedef int qr_line[3];
 
@@ -2575,17 +2574,6 @@ static const unsigned char QR_ALIGNMENT_SPACING[34]={
   24,26,26,26,28,28
 };
 
-static inline void qr_svg_points(const char *cls,
-                                 qr_point *p,
-                                 int n)
-{
-    int i;
-    svg_path_start(cls, 1, 0, 0);
-    for(i = 0; i < n; i++, p++)
-        svg_path_moveto(SVG_ABS, p[0][0], p[0][1]);
-    svg_path_end();
-}
-
 /*Initialize the sampling grid for each region of the code.
   _version:  The (decoded) version number.
   _ul_pos:   The location of the UL finder pattern.
@@ -2726,7 +2714,6 @@ static void qr_sampling_grid_init(qr_sampling_grid *_grid,int _version,
         }
       }
     }
-    qr_svg_points("align", p, nalign * nalign);
     free(q);
     free(p);
   }
@@ -2959,7 +2946,6 @@ static void qr_sampling_grid_sample(const qr_sampling_grid *_grid,
   qr_data_mask_fill(_data_bits,_dim,_fmt_info&7);
   stride=_dim+QR_INT_BITS-1>>QR_INT_LOGBITS;
   u0=0;
-  svg_path_start("sampling-grid", 1, 0, 0);
   /*We read data cell-by-cell to avoid having to constantly change which
      projection we're using as we read each bit.
     This (and the position-dependent data mask) is the reason we buffer the
@@ -3002,7 +2988,6 @@ static void qr_sampling_grid_sample(const qr_sampling_grid *_grid,
             qr_hom_cell_fproject(p,cell,x,y,w);
             _data_bits[u*stride+(v>>QR_INT_LOGBITS)]^=
              qr_img_get_bit(_img,_width,_height,p[0],p[1])<<(v&QR_INT_BITS-1);
-            svg_path_moveto(SVG_ABS, p[0], p[1]);
           }
           x+=cell->fwd[0][1];
           y+=cell->fwd[1][1];
@@ -3016,7 +3001,6 @@ static void qr_sampling_grid_sample(const qr_sampling_grid *_grid,
     }
     u0=u1;
   }
-  svg_path_end();
 }
 
 /*Arranges the sample bits read by qr_sampling_grid_sample() into bytes and
@@ -3979,25 +3963,6 @@ int _zbar_qr_found_line (qr_reader *reader,
     return(0);
 }
 
-static inline void qr_svg_centers (const qr_finder_center *centers,
-                                   int ncenters)
-{
-    int i, j;
-    svg_path_start("centers", 1, 0, 0);
-    for(i = 0; i < ncenters; i++)
-        svg_path_moveto(SVG_ABS, centers[i].pos[0], centers[i].pos[1]);
-    svg_path_end();
-
-    svg_path_start("edge-pts", 1, 0, 0);
-    for(i = 0; i < ncenters; i++) {
-        const qr_finder_center *cen = centers + i;
-        for(j = 0; j < cen->nedge_pts; j++)
-            svg_path_moveto(SVG_ABS,
-                            cen->edge_pts[j].pos[0], cen->edge_pts[j].pos[1]);
-    }
-    svg_path_end();
-}
-
 int _zbar_qr_decode (qr_reader *reader,
                      zbar_image_scanner_t *iscn,
                      zbar_image_t *img)
@@ -4010,15 +3975,12 @@ int _zbar_qr_decode (qr_reader *reader,
        reader->finder_lines[1].nlines < 9)
         return(0);
 
-    svg_group_start("finder", 0, 1. / (1 << QR_FINDER_SUBPREC), 0, 0, 0);
-
     ncenters = qr_finder_centers_locate(&centers, &edge_pts, reader, 0, 0);
 
     zprintf(14, "%dx%d finders, %d centers:\n",
             reader->finder_lines[0].nlines,
             reader->finder_lines[1].nlines,
             ncenters);
-    qr_svg_centers(centers, ncenters);
 
     if(ncenters >= 3) {
         void *bin = qr_binarize(img->data, img->width, img->height);
@@ -4035,7 +3997,6 @@ int _zbar_qr_decode (qr_reader *reader,
         qr_code_data_list_clear(&qrlist);
         free(bin);
     }
-    svg_group_end();
 
     if(centers)
         free(centers);
