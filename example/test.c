@@ -5,6 +5,13 @@
 
 #include <zbar.h>
 
+#if !defined(_MSC_VER)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmisleading-indentation"
+#pragma GCC diagnostic ignored "-Wshift-negative-value"
+#pragma GCC diagnostic ignored "-Wunused-function"
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_NO_BMP
 #define STBI_NO_GIF
@@ -15,9 +22,9 @@
 #define STBI_NO_PSD
 #define STBI_NO_TGA
 #include "stb_image.h"
-
-const size_t width = 200;
-const size_t height = 200;
+#if !defined(_MSC_VER)
+#pragma GCC diagnostic pop
+#endif
 
 int main(int argc, char **argv)
 {
@@ -61,8 +68,7 @@ int main(int argc, char **argv)
     char *decode_data = 0;
     size_t decode_size = 0;
 
-    for (zbar_symbol_t *symbol = zbar_image_first_symbol(image); symbol; symbol = zbar_symbol_next(symbol)) {
-        zbar_symbol_type_t type = zbar_symbol_get_type(symbol);
+    for (const zbar_symbol_t *symbol = zbar_image_first_symbol(image); symbol; symbol = zbar_symbol_next(symbol)) {
         const char *symbol_data = zbar_symbol_get_data(symbol);
         size_t symbol_length = zbar_symbol_get_data_length(symbol);
         decode_data = realloc(decode_data, decode_size + symbol_length);

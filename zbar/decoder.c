@@ -2,6 +2,7 @@
 #include <stdlib.h>     /* malloc, calloc, free */
 #include <stdio.h>      /* snprintf */
 #include <string.h>     /* memset, strlen */
+#include <stddef.h>
 
 #include <zbar.h>
 
@@ -83,7 +84,7 @@ void zbar_decoder_destroy (zbar_decoder_t *dcode) {
 }
 
 void zbar_decoder_reset (zbar_decoder_t *dcode) {
-    memset(dcode, 0, (long)&dcode->buf_alloc - (long)dcode);
+    memset(dcode, 0, (ptrdiff_t)&dcode->buf_alloc - (ptrdiff_t)dcode);
 #ifdef ENABLE_EAN
     ean_reset(&dcode->ean);
 #endif
