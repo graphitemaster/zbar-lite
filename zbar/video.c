@@ -21,6 +21,8 @@
  *  http://sourceforge.net/projects/zbar
  *------------------------------------------------------------------------*/
 
+#include <stdint.h>
+
 #include "video.h"
 #include "image.h"
 
@@ -318,7 +320,7 @@ int zbar_video_enable (zbar_video_t *vdo,
             if(vdo->nq(vdo, vdo->images[i]) ||
                ((i + 1 < vdo->num_images) && video_lock(vdo)))
                 return(-1);
-        
+
         return(vdo->start(vdo));
     }
     else {
@@ -358,7 +360,7 @@ zbar_image_t *zbar_video_next_image (zbar_video_t *vdo)
             img = vdo->shadow_image;
             vdo->shadow_image = (img) ? img->next : NULL;
             video_unlock(vdo);
-                
+
             if(!img) {
                 img = zbar_image_create();
                 assert(img);

@@ -22,12 +22,7 @@
  *------------------------------------------------------------------------*/
 
 #include <config.h>
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#ifdef HAVE_INTTYPES_H
-# include <inttypes.h>
-#endif
+#include <stdint.h>
 #include <stdlib.h>     /* malloc, free */
 #include <string.h>     /* memcmp, memset, memcpy */
 #include <assert.h>
@@ -36,9 +31,7 @@
 #include "error.h"
 #include "image.h"
 #include "timer.h"
-#ifdef ENABLE_QRCODE
-# include "qrcode.h"
-#endif
+#include "qrcode.h"
 #include "img_scanner.h"
 #include "svg.h"
 

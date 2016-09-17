@@ -24,15 +24,10 @@
 #define _ERROR_H_
 
 #include <config.h>
-#ifdef HAVE_INTTYPES_H
-# include <inttypes.h>
-#endif
+#include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#ifdef HAVE_ERRNO_H
-# include <errno.h>
-#endif
 #include <assert.h>
 
 #include <zbar.h>

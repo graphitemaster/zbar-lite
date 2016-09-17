@@ -21,6 +21,8 @@
  *  http://sourceforge.net/projects/zbar
  *------------------------------------------------------------------------*/
 
+#include <inttypes.h>
+
 #include "processor.h"
 #include "window.h"
 #include "image.h"
