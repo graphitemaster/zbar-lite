@@ -30,7 +30,6 @@
 #include <zbar.h>
 #include "error.h"
 #include "image.h"
-#include "timer.h"
 #include "qrcode.h"
 #include "img_scanner.h"
 #if 1
@@ -631,6 +630,20 @@ static inline void quiet_border (zbar_image_scanner_t *iscn)
         y += (dy);                              \
         p += (dx) + ((uintptr_t)(dy) * w);       \
     } while(0);
+
+#if defined(_WIN32)
+#include <windows.h>
+static inline int _zbar_timer_now() {
+    return timeGetTime();
+}
+#else
+#include <sys/time.h>
+static inline int _zbar_timer_now() {
+    struct timeval now;
+    gettimeofday(&now, NULL);
+    return now.tv_sec * 1000 + now.tv_usec / 1000;
+}
+#endif
 
 int zbar_scan_image (zbar_image_scanner_t *iscn,
                      zbar_image_t *img)
