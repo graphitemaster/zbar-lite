@@ -6,12 +6,12 @@
 #if !defined(_qrcode_util_H)
 # define _qrcode_util_H (1)
 
-#define QR_MAXI(_a,_b)      ((_a)-((_a)-(_b)&-((_b)>(_a))))
-#define QR_MINI(_a,_b)      ((_a)+((_b)-(_a)&-((_b)<(_a))))
+#define QR_MAXI(_a,_b)      ((_a)-(((_a)-(_b))&-((_b)>(_a))))
+#define QR_MINI(_a,_b)      ((_a)+(((_b)-(_a))&-((_b)<(_a))))
 #define QR_SIGNI(_x)        (((_x)>0)-((_x)<0))
 #define QR_SIGNMASK(_x)     (-((_x)<0))
 /*Unlike copysign(), simply inverts the sign of _a if _b is negative.*/
-#define QR_FLIPSIGNI(_a,_b) ((_a)+QR_SIGNMASK(_b)^QR_SIGNMASK(_b))
+#define QR_FLIPSIGNI(_a,_b) (((_a)+QR_SIGNMASK(_b))^QR_SIGNMASK(_b))
 #define QR_COPYSIGNI(_a,_b) QR_FLIPSIGNI(abs(_a),_b)
 /*Divides a signed integer by a positive value with exact rounding.*/
 #define QR_DIVROUND(_x,_y)  (((_x)+QR_FLIPSIGNI(_y>>1,_x))/(_y))
@@ -44,7 +44,7 @@
 
 /*Multiplies 32-bit numbers _a and _b, adds (possibly 64-bit) number _r, and
    takes bits [_s,_s+31] of the result.*/
-#define QR_FIXMUL(_a,_b,_r,_s) ((int)((_a)*(long long)(_b)+(_r)>>(_s)))
+#define QR_FIXMUL(_a,_b,_r,_s) ((int)(((_a)*(long long)(_b)+(_r))>>(_s)))
 /*Multiplies 32-bit numbers _a and _b, adds (possibly 64-bit) number _r, and
    gives all 64 bits of the result.*/
 #define QR_EXTMUL(_a,_b,_r)    ((_a)*(long long)(_b)+(_r))

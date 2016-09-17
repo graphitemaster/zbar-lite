@@ -1,25 +1,3 @@
-/*------------------------------------------------------------------------
- *  Copyright 2007-2010 (c) Jeff Brown <spadix@users.sourceforge.net>
- *
- *  This file is part of the ZBar Bar Code Reader.
- *
- *  The ZBar Bar Code Reader is free software; you can redistribute it
- *  and/or modify it under the terms of the GNU Lesser Public License as
- *  published by the Free Software Foundation; either version 2.1 of
- *  the License, or (at your option) any later version.
- *
- *  The ZBar Bar Code Reader is distributed in the hope that it will be
- *  useful, but WITHOUT ANY WARRANTY; without even the implied warranty
- *  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Lesser Public License for more details.
- *
- *  You should have received a copy of the GNU Lesser Public License
- *  along with the ZBar Bar Code Reader; if not, write to the Free
- *  Software Foundation, Inc., 51 Franklin St, Fifth Floor,
- *  Boston, MA  02110-1301  USA
- *
- *  http://sourceforge.net/projects/zbar
- *------------------------------------------------------------------------*/
 #ifndef _IMAGE_H_
 #define _IMAGE_H_
 
@@ -103,14 +81,9 @@ extern int _zbar_best_format(uint32_t, uint32_t*, const uint32_t*);
 extern const zbar_format_def_t *_zbar_format_lookup(uint32_t);
 extern void _zbar_image_free(zbar_image_t*);
 
-#ifdef DEBUG_SVG
-extern int zbar_image_write_png(const zbar_image_t*, const char*);
-#else
-# define zbar_image_write_png(...)
-#endif
-
 static inline void _zbar_image_refcnt (zbar_image_t *img,
-                                       int delta) {
+                                       int delta)
+{
     if(!_zbar_refcnt(&img->refcnt, delta) && delta <= 0) {
         if(img->cleanup)
             img->cleanup(img);
@@ -120,14 +93,16 @@ static inline void _zbar_image_refcnt (zbar_image_t *img,
 }
 
 static inline void _zbar_image_swap_symbols (zbar_image_t *a,
-        zbar_image_t *b) {
+                                             zbar_image_t *b)
+{
     zbar_symbol_set_t *tmp = a->syms;
     a->syms = b->syms;
     b->syms = tmp;
 }
 
 static inline void _zbar_image_copy_size (zbar_image_t *dst,
-        const zbar_image_t *src) {
+                                          const zbar_image_t *src)
+{
     dst->width = src->width;
     dst->height = src->height;
     dst->crop_x = src->crop_x;

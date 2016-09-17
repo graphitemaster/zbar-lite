@@ -157,9 +157,7 @@ int qr_code_data_list_extract_text(const qr_code_data_list *_qrlist,
 
                 for(k=0; k<qrdataj->nentries&&!err; k++) {
                     size_t              inleft;
-                    size_t              outleft;
                     char               *in;
-                    char               *out;
                     entry=qrdataj->entries+k;
                     switch(entry->mode) {
                     case QR_MODE_NUM: {

@@ -1,26 +1,3 @@
-/*------------------------------------------------------------------------
- *  Copyright 2007-2010 (c) Jeff Brown <spadix@users.sourceforge.net>
- *
- *  This file is part of the ZBar Bar Code Reader.
- *
- *  The ZBar Bar Code Reader is free software; you can redistribute it
- *  and/or modify it under the terms of the GNU Lesser Public License as
- *  published by the Free Software Foundation; either version 2.1 of
- *  the License, or (at your option) any later version.
- *
- *  The ZBar Bar Code Reader is distributed in the hope that it will be
- *  useful, but WITHOUT ANY WARRANTY; without even the implied warranty
- *  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Lesser Public License for more details.
- *
- *  You should have received a copy of the GNU Lesser Public License
- *  along with the ZBar Bar Code Reader; if not, write to the Free
- *  Software Foundation, Inc., 51 Franklin St, Fifth Floor,
- *  Boston, MA  02110-1301  USA
- *
- *  http://sourceforge.net/projects/zbar
- *------------------------------------------------------------------------*/
-
 #include <config.h>
 #include <zbar.h>
 
@@ -285,7 +262,7 @@ static inline zbar_symbol_type_t ean_part_end4 (ean_pass_t *pass,
         /* invalid parity combination */
         return(ZBAR_NONE);
 
-    if(!par == fwd) {
+    if((!par) == fwd) {
         /* reverse sampled digits */
         unsigned char tmp = pass->raw[1];
         pass->state |= STATE_REV;
@@ -369,7 +346,7 @@ static inline zbar_symbol_type_t ean_part_end7 (ean_decoder_t *ean,
         /* invalid parity combination */
         return(ZBAR_NONE);
 
-    if(!par == fwd) {
+    if((!par) == fwd) {
         unsigned char i;
         pass->state |= STATE_REV;
         /* reverse sampled digits */
