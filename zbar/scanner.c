@@ -75,8 +75,7 @@ struct zbar_scanner_s {
     unsigned width;         /* last element width */
 };
 
-zbar_scanner_t *zbar_scanner_create (zbar_decoder_t *dcode)
-{
+zbar_scanner_t *zbar_scanner_create (zbar_decoder_t *dcode) {
     zbar_scanner_t *scn = malloc(sizeof(zbar_scanner_t));
     scn->decoder = dcode;
     scn->y1_min_thresh = ZBAR_SCANNER_THRESH_MIN;
@@ -84,13 +83,11 @@ zbar_scanner_t *zbar_scanner_create (zbar_decoder_t *dcode)
     return(scn);
 }
 
-void zbar_scanner_destroy (zbar_scanner_t *scn)
-{
+void zbar_scanner_destroy (zbar_scanner_t *scn) {
     free(scn);
 }
 
-zbar_symbol_type_t zbar_scanner_reset (zbar_scanner_t *scn)
-{
+zbar_symbol_type_t zbar_scanner_reset (zbar_scanner_t *scn) {
     memset(&scn->x, 0, sizeof(zbar_scanner_t) - offsetof(zbar_scanner_t, x));
     scn->y1_thresh = scn->y1_min_thresh;
     if(scn->decoder)
@@ -98,15 +95,13 @@ zbar_symbol_type_t zbar_scanner_reset (zbar_scanner_t *scn)
     return(ZBAR_NONE);
 }
 
-unsigned zbar_scanner_get_width (const zbar_scanner_t *scn)
-{
+unsigned zbar_scanner_get_width (const zbar_scanner_t *scn) {
     return(scn->width);
 }
 
 unsigned zbar_scanner_get_edge (const zbar_scanner_t *scn,
                                 unsigned offset,
-                                int prec)
-{
+                                int prec) {
     unsigned edge = scn->last_edge - offset - (1 << ZBAR_FIXED) - ROUND;
     prec = ZBAR_FIXED - prec;
     if(prec > 0)
@@ -117,13 +112,11 @@ unsigned zbar_scanner_get_edge (const zbar_scanner_t *scn,
         return(edge << -prec);
 }
 
-zbar_color_t zbar_scanner_get_color (const zbar_scanner_t *scn)
-{
+zbar_color_t zbar_scanner_get_color (const zbar_scanner_t *scn) {
     return((scn->y1_sign <= 0) ? ZBAR_SPACE : ZBAR_BAR);
 }
 
-static inline unsigned calc_thresh (zbar_scanner_t *scn)
-{
+static inline unsigned calc_thresh (zbar_scanner_t *scn) {
     /* threshold 1st to improve noise rejection */
     unsigned dx, thresh = scn->y1_thresh;
     unsigned long t;
@@ -149,8 +142,7 @@ static inline unsigned calc_thresh (zbar_scanner_t *scn)
 }
 
 static inline zbar_symbol_type_t process_edge (zbar_scanner_t *scn,
-                                               int y1)
-{
+        int y1) {
     if(!scn->y1_sign)
         scn->last_edge = scn->cur_edge = (1 << ZBAR_FIXED) + ROUND;
     else if(!scn->last_edge)
@@ -169,8 +161,7 @@ static inline zbar_symbol_type_t process_edge (zbar_scanner_t *scn,
     return(ZBAR_PARTIAL);
 }
 
-inline zbar_symbol_type_t zbar_scanner_flush (zbar_scanner_t *scn)
-{
+inline zbar_symbol_type_t zbar_scanner_flush (zbar_scanner_t *scn) {
     unsigned x;
     if(!scn->y1_sign)
         return(ZBAR_NONE);
@@ -191,8 +182,7 @@ inline zbar_symbol_type_t zbar_scanner_flush (zbar_scanner_t *scn)
     return(ZBAR_PARTIAL);
 }
 
-zbar_symbol_type_t zbar_scanner_new_scan (zbar_scanner_t *scn)
-{
+zbar_symbol_type_t zbar_scanner_new_scan (zbar_scanner_t *scn) {
     zbar_symbol_type_t edge = ZBAR_NONE;
     while(scn->y1_sign) {
         zbar_symbol_type_t tmp = zbar_scanner_flush(scn);
@@ -209,8 +199,7 @@ zbar_symbol_type_t zbar_scanner_new_scan (zbar_scanner_t *scn)
 }
 
 zbar_symbol_type_t zbar_scan_y (zbar_scanner_t *scn,
-                                int y)
-{
+                                int y) {
     /* FIXME calc and clip to max y range... */
     /* retrieve short value history */
     register int x = scn->x;
@@ -222,8 +211,7 @@ zbar_symbol_type_t zbar_scan_y (zbar_scanner_t *scn,
         /* update weighted moving average */
         y0_0 += ((int)((y - y0_1) * EWMA_WEIGHT)) >> ZBAR_FIXED;
         scn->y0[x & 3] = y0_0;
-    }
-    else
+    } else
         y0_0 = y0_1 = scn->y0[0] = scn->y0[1] = scn->y0[2] = scn->y0[3] = y;
     y0_2 = scn->y0[(x - 2) & 3];
     y0_3 = scn->y0[(x - 3) & 3];
@@ -232,7 +220,7 @@ zbar_symbol_type_t zbar_scan_y (zbar_scanner_t *scn,
     {
         register int y1_2 = y0_2 - y0_3;
         if((abs(y1_1) < abs(y1_2)) &&
-           ((y1_1 >= 0) == (y1_2 >= 0)))
+                ((y1_1 >= 0) == (y1_2 >= 0)))
             y1_1 = y1_2;
     }
 
@@ -246,9 +234,8 @@ zbar_symbol_type_t zbar_scan_y (zbar_scanner_t *scn,
     edge = ZBAR_NONE;
     /* 2nd zero-crossing is 1st local min/max - could be edge */
     if((!y2_1 ||
-        ((y2_1 > 0) ? y2_2 < 0 : y2_2 > 0)) &&
-       (calc_thresh(scn) <= abs(y1_1)))
-    {
+            ((y2_1 > 0) ? y2_2 < 0 : y2_2 > 0)) &&
+            (calc_thresh(scn) <= abs(y1_1))) {
         /* check for 1st sign change */
         char y1_rev = (scn->y1_sign > 0) ? y1_1 < 0 : y1_1 > 0;
         if(y1_rev)
@@ -277,8 +264,7 @@ zbar_symbol_type_t zbar_scan_y (zbar_scanner_t *scn,
             scn->cur_edge += x << ZBAR_FIXED;
             dbprintf(1, "\n");
         }
-    }
-    else
+    } else
         dbprintf(1, "\n");
     /* FIXME add fall-thru pass to decoder after heuristic "idle" period
        (eg, 6-8 * last width) */
@@ -294,8 +280,7 @@ void zbar_scanner_get_state (const zbar_scanner_t *scn,
                              int *y0,
                              int *y1,
                              int *y2,
-                             int *y1_thresh)
-{
+                             int *y1_thresh) {
     register int y0_0 = scn->y0[(scn->x - 1) & 3];
     register int y0_1 = scn->y0[(scn->x - 2) & 3];
     register int y0_2 = scn->y0[(scn->x - 3) & 3];

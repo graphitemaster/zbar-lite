@@ -35,13 +35,11 @@
 /* at this point lengths are all decode unit offsets from the decode edge
  * NB owned by finder
  */
-qr_finder_line *_zbar_decoder_get_qr_finder_line (zbar_decoder_t *dcode)
-{
+qr_finder_line *_zbar_decoder_get_qr_finder_line (zbar_decoder_t *dcode) {
     return(&dcode->qrf.line);
 }
 
-zbar_symbol_type_t _zbar_find_qr (zbar_decoder_t *dcode)
-{
+zbar_symbol_type_t _zbar_find_qr (zbar_decoder_t *dcode) {
     qr_finder_t *qrf = &dcode->qrf;
     unsigned s, qz, w;
     int ei;

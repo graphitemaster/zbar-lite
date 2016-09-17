@@ -54,8 +54,7 @@ static const char * const err_str[] = {
 #define ERR_MAX (strlen(err_str[ZBAR_ERR_CLOSED]))
 
 int zbar_version (unsigned *major,
-                  unsigned *minor)
-{
+                  unsigned *minor) {
     if(major)
         *major = ZBAR_VERSION_MAJOR;
     if(minor)
@@ -63,13 +62,11 @@ int zbar_version (unsigned *major,
     return(0);
 }
 
-void zbar_set_verbosity (int level)
-{
+void zbar_set_verbosity (int level) {
     _zbar_verbosity = level;
 }
 
-void zbar_increase_verbosity ()
-{
+void zbar_increase_verbosity () {
     if(!_zbar_verbosity)
         _zbar_verbosity++;
     else
@@ -77,16 +74,14 @@ void zbar_increase_verbosity ()
 }
 
 int _zbar_error_spew (const void *container,
-                      int verbosity)
-{
+                      int verbosity) {
     const errinfo_t *err = container;
     assert(err->magic == ERRINFO_MAGIC);
     fprintf(stderr, "%s", _zbar_error_string(err, verbosity));
     return(-err->sev);
 }
 
-zbar_error_t _zbar_get_error_code (const void *container)
-{
+zbar_error_t _zbar_get_error_code (const void *container) {
     const errinfo_t *err = container;
     assert(err->magic == ERRINFO_MAGIC);
     return(err->type);
@@ -97,8 +92,7 @@ zbar_error_t _zbar_get_error_code (const void *container)
  */
 
 const char *_zbar_error_string (const void *container,
-                                int verbosity)
-{
+                                int verbosity) {
     static const char basefmt[] = "%s: zbar %s in %s():\n    %s: ";
     errinfo_t *err = (errinfo_t*)container;
     const char *sev, *mod, *func, *type;
@@ -112,7 +106,7 @@ const char *_zbar_error_string (const void *container,
         sev = sev_str[1];
 
     if(err->module >= ZBAR_MOD_PROCESSOR &&
-       err->module < ZBAR_MOD_UNKNOWN)
+            err->module < ZBAR_MOD_UNKNOWN)
         mod = mod_str[err->module];
     else
         mod = mod_str[ZBAR_MOD_UNKNOWN];
@@ -137,12 +131,10 @@ const char *_zbar_error_string (const void *container,
                 err->arg_str = strdup("<?>");
             err->buf = realloc(err->buf, newlen + strlen(err->arg_str));
             len += sprintf(err->buf + len, err->detail, err->arg_str);
-        }
-        else if(strstr(err->detail, "%d") || strstr(err->detail, "%x")) {
+        } else if(strstr(err->detail, "%d") || strstr(err->detail, "%x")) {
             err->buf = realloc(err->buf, newlen + 32);
             len += sprintf(err->buf + len, err->detail, err->arg_int);
-        }
-        else {
+        } else {
             err->buf = realloc(err->buf, newlen);
             len += sprintf(err->buf + len, "%s", err->detail);
         }
@@ -165,7 +157,7 @@ const char *_zbar_error_string (const void *container,
                          FORMAT_MESSAGE_ALLOCATE_BUFFER |
                          FORMAT_MESSAGE_IGNORE_INSERTS,
                          NULL, err->errnum, 0, (LPTSTR)&syserr, 1, NULL) &&
-           syserr) {
+                syserr) {
             char sysfmt[] = ": %s (%d)\n";
             err->buf = realloc(err->buf, len + strlen(sysfmt) + strlen(syserr));
             len += sprintf(err->buf + len, sysfmt, syserr, err->errnum);

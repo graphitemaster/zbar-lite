@@ -37,14 +37,13 @@ static const signed char code93_hash[0x40] = {
     0x2b, 0x05, 0x21, 0x3b, 0x04, 0x15, 0x12, 0x0c,
     0x00, 0x26, 0x23, 0x00,   -1, 0x2e, 0x3f, 0x13,
     0x2e, 0x36,   -1, 0x08, 0x09,   -1, 0x15, 0x14,
-      -1, 0x00, 0x21, 0x3b,   -1, 0x33, 0x00,   -1,
+    -1, 0x00, 0x21, 0x3b,   -1, 0x33, 0x00,   -1,
     0x2d, 0x0c, 0x1b, 0x0a, 0x3f, 0x3f, 0x29, 0x1c,
 };
 
 static inline int
 check_width (unsigned cur,
-             unsigned prev)
-{
+             unsigned prev) {
     unsigned dw;
     if(prev > cur)
         dw = prev - cur;
@@ -55,8 +54,7 @@ check_width (unsigned cur,
 }
 
 static inline int
-encode6 (zbar_decoder_t *dcode)
-{
+encode6 (zbar_decoder_t *dcode) {
     /* build edge signature of character */
     unsigned s = dcode->s6;
     int sig = 0, i;
@@ -78,8 +76,7 @@ encode6 (zbar_decoder_t *dcode)
 }
 
 static inline int
-validate_sig (int sig)
-{
+validate_sig (int sig) {
     int i, sum = 0, emin = 0, sig0 = 0, sig1 = 0;
     dbprintf(3, " sum=0");
     for(i = 3; --i >= 0; ) {
@@ -113,13 +110,12 @@ validate_sig (int sig)
 }
 
 static inline int
-decode6 (zbar_decoder_t *dcode)
-{
+decode6 (zbar_decoder_t *dcode) {
     int sig = encode6(dcode);
     int g0, g1, c;
     if(sig < 0 ||
-       (sig & 0x3) + ((sig >> 4) & 0x3) + ((sig >> 8) & 0x3) != 3 ||
-       validate_sig(sig))
+            (sig & 0x3) + ((sig >> 4) & 0x3) + ((sig >> 8) & 0x3) != 3 ||
+            validate_sig(sig))
         return(-1);
 
     if(dcode->code93.direction) {
@@ -142,8 +138,7 @@ decode6 (zbar_decoder_t *dcode)
 }
 
 static inline zbar_symbol_type_t
-decode_start (zbar_decoder_t *dcode)
-{
+decode_start (zbar_decoder_t *dcode) {
     code93_decoder_t *dcode93 = &dcode->code93;
     unsigned dir, qz, s = dcode->s6;
     int c;
@@ -179,8 +174,7 @@ decode_start (zbar_decoder_t *dcode)
 
 static inline zbar_symbol_type_t
 decode_abort (zbar_decoder_t *dcode,
-              const char *reason)
-{
+              const char *reason) {
     code93_decoder_t *dcode93 = &dcode->code93;
     if(dcode93->character > 1)
         release_lock(dcode, ZBAR_CODE93);
@@ -191,22 +185,20 @@ decode_abort (zbar_decoder_t *dcode,
 }
 
 static inline zbar_symbol_type_t
-check_stop (zbar_decoder_t *dcode)
-{
+check_stop (zbar_decoder_t *dcode) {
     code93_decoder_t *dcode93 = &dcode->code93;
     unsigned n = dcode93->character, s = dcode->s6;
     int max_len = CFG(*dcode93, ZBAR_CFG_MAX_LEN);
     if(n < 2 ||
-       n < CFG(*dcode93, ZBAR_CFG_MIN_LEN) ||
-       (max_len && n > max_len))
+            n < CFG(*dcode93, ZBAR_CFG_MIN_LEN) ||
+            (max_len && n > max_len))
         return(decode_abort(dcode, "invalid len"));
 
     if(dcode93->direction) {
         unsigned qz = get_width(dcode, 0);
         if(qz && qz < (s * 3) / 4)
             return(decode_abort(dcode, "invalid qz"));
-    }
-    else if(decode_e(pair_width(dcode, 0), s, 9))
+    } else if(decode_e(pair_width(dcode, 0), s, 9))
         /* FIXME forward-trailing QZ check */
         return(decode_abort(dcode, "invalid stop"));
 
@@ -217,8 +209,7 @@ check_stop (zbar_decoder_t *dcode)
 
 static inline int
 plusmod47 (int acc,
-           int add)
-{
+           int add) {
     acc += add;
     if(acc >= CHKMOD)
         acc -= CHKMOD;
@@ -226,8 +217,7 @@ plusmod47 (int acc,
 }
 
 static inline int
-validate_checksums (zbar_decoder_t *dcode)
-{
+validate_checksums (zbar_decoder_t *dcode) {
     code93_decoder_t *dcode93 = &dcode->code93;
     unsigned d, i, n = dcode93->character;
     unsigned sum_c = 0, acc_c = 0, i_c = (n - 2) % 20;
@@ -268,8 +258,7 @@ validate_checksums (zbar_decoder_t *dcode)
 
 /* resolve scan direction and convert to ASCII */
 static inline int
-postprocess (zbar_decoder_t *dcode)
-{
+postprocess (zbar_decoder_t *dcode) {
     code93_decoder_t *dcode93 = &dcode->code93;
     unsigned i, j, n = dcode93->character;
     static const unsigned char code93_graph[] = "-. $/+%";
@@ -306,13 +295,21 @@ postprocess (zbar_decoder_t *dcode)
             if(d < 0xa || d >= 0x24)
                 return(1);
             d -= 0xa;
-            switch(shift)
-            {
-            case 0x2b: d++; break;
-            case 0x2c: d = code93_s2[d]; break;
-            case 0x2d: d += 0x21; break;
-            case 0x2e: d += 0x61; break;
-            default: return(1);
+            switch(shift) {
+            case 0x2b:
+                d++;
+                break;
+            case 0x2c:
+                d = code93_s2[d];
+                break;
+            case 0x2d:
+                d += 0x21;
+                break;
+            case 0x2e:
+                d += 0x61;
+                break;
+            default:
+                return(1);
             }
         }
         dcode->buf[j++] = d;
@@ -328,8 +325,7 @@ postprocess (zbar_decoder_t *dcode)
 }
 
 zbar_symbol_type_t
-_zbar_decode_code93 (zbar_decoder_t *dcode)
-{
+_zbar_decode_code93 (zbar_decoder_t *dcode) {
     code93_decoder_t *dcode93 = &dcode->code93;
     int c;
 
@@ -343,9 +339,9 @@ _zbar_decode_code93 (zbar_decoder_t *dcode)
     }
 
     if(/* process every 6th element of active symbol */
-       ++dcode93->element != 6 ||
-       /* decode color based on direction */
-       get_color(dcode) == dcode93->direction)
+        ++dcode93->element != 6 ||
+        /* decode color based on direction */
+        get_color(dcode) == dcode93->direction)
         return(ZBAR_NONE);
 
     dcode93->element = 0;
@@ -391,7 +387,7 @@ _zbar_decode_code93 (zbar_decoder_t *dcode)
 
     if(!dcode93->character)
         dcode93->buf = c;
-    else 
+    else
         dcode->buf[dcode93->character] = c;
     dcode93->character++;
 

@@ -29,81 +29,113 @@
 #include <zbar.h>
 #include "symbol.h"
 
-const char *zbar_get_symbol_name (zbar_symbol_type_t sym)
-{
+const char *zbar_get_symbol_name (zbar_symbol_type_t sym) {
     switch(sym & ZBAR_SYMBOL) {
-    case ZBAR_EAN2: return("EAN-2");
-    case ZBAR_EAN5: return("EAN-5");
-    case ZBAR_EAN8: return("EAN-8");
-    case ZBAR_UPCE: return("UPC-E");
-    case ZBAR_ISBN10: return("ISBN-10");
-    case ZBAR_UPCA: return("UPC-A");
-    case ZBAR_EAN13: return("EAN-13");
-    case ZBAR_ISBN13: return("ISBN-13");
-    case ZBAR_COMPOSITE: return("COMPOSITE");
-    case ZBAR_I25: return("I2/5");
-    case ZBAR_DATABAR: return("DataBar");
-    case ZBAR_DATABAR_EXP: return("DataBar-Exp");
-    case ZBAR_CODABAR: return("Codabar");
-    case ZBAR_CODE39: return("CODE-39");
-    case ZBAR_CODE93: return("CODE-93");
-    case ZBAR_CODE128: return("CODE-128");
-    case ZBAR_PDF417: return("PDF417");
-    case ZBAR_QRCODE: return("QR-Code");
-    default: return("UNKNOWN");
+    case ZBAR_EAN2:
+        return("EAN-2");
+    case ZBAR_EAN5:
+        return("EAN-5");
+    case ZBAR_EAN8:
+        return("EAN-8");
+    case ZBAR_UPCE:
+        return("UPC-E");
+    case ZBAR_ISBN10:
+        return("ISBN-10");
+    case ZBAR_UPCA:
+        return("UPC-A");
+    case ZBAR_EAN13:
+        return("EAN-13");
+    case ZBAR_ISBN13:
+        return("ISBN-13");
+    case ZBAR_COMPOSITE:
+        return("COMPOSITE");
+    case ZBAR_I25:
+        return("I2/5");
+    case ZBAR_DATABAR:
+        return("DataBar");
+    case ZBAR_DATABAR_EXP:
+        return("DataBar-Exp");
+    case ZBAR_CODABAR:
+        return("Codabar");
+    case ZBAR_CODE39:
+        return("CODE-39");
+    case ZBAR_CODE93:
+        return("CODE-93");
+    case ZBAR_CODE128:
+        return("CODE-128");
+    case ZBAR_PDF417:
+        return("PDF417");
+    case ZBAR_QRCODE:
+        return("QR-Code");
+    default:
+        return("UNKNOWN");
     }
 }
 
-const char *zbar_get_addon_name (zbar_symbol_type_t sym)
-{
+const char *zbar_get_addon_name (zbar_symbol_type_t sym) {
     return("");
 }
 
-const char *zbar_get_config_name (zbar_config_t cfg)
-{
+const char *zbar_get_config_name (zbar_config_t cfg) {
     switch(cfg) {
-    case ZBAR_CFG_ENABLE: return("ENABLE");
-    case ZBAR_CFG_ADD_CHECK: return("ADD_CHECK");
-    case ZBAR_CFG_EMIT_CHECK: return("EMIT_CHECK");
-    case ZBAR_CFG_ASCII: return("ASCII");
-    case ZBAR_CFG_MIN_LEN: return("MIN_LEN");
-    case ZBAR_CFG_MAX_LEN: return("MAX_LEN");
-    case ZBAR_CFG_UNCERTAINTY: return("UNCERTAINTY");
-    case ZBAR_CFG_POSITION: return("POSITION");
-    case ZBAR_CFG_X_DENSITY: return("X_DENSITY");
-    case ZBAR_CFG_Y_DENSITY: return("Y_DENSITY");
-    default: return("");
+    case ZBAR_CFG_ENABLE:
+        return("ENABLE");
+    case ZBAR_CFG_ADD_CHECK:
+        return("ADD_CHECK");
+    case ZBAR_CFG_EMIT_CHECK:
+        return("EMIT_CHECK");
+    case ZBAR_CFG_ASCII:
+        return("ASCII");
+    case ZBAR_CFG_MIN_LEN:
+        return("MIN_LEN");
+    case ZBAR_CFG_MAX_LEN:
+        return("MAX_LEN");
+    case ZBAR_CFG_UNCERTAINTY:
+        return("UNCERTAINTY");
+    case ZBAR_CFG_POSITION:
+        return("POSITION");
+    case ZBAR_CFG_X_DENSITY:
+        return("X_DENSITY");
+    case ZBAR_CFG_Y_DENSITY:
+        return("Y_DENSITY");
+    default:
+        return("");
     }
 }
 
-const char *zbar_get_modifier_name (zbar_modifier_t mod)
-{
+const char *zbar_get_modifier_name (zbar_modifier_t mod) {
     switch(mod) {
-    case ZBAR_MOD_GS1: return("GS1");
-    case ZBAR_MOD_AIM: return("AIM");
-    default: return("");
+    case ZBAR_MOD_GS1:
+        return("GS1");
+    case ZBAR_MOD_AIM:
+        return("AIM");
+    default:
+        return("");
     }
 }
 
-const char *zbar_get_orientation_name (zbar_orientation_t orient)
-{
+const char *zbar_get_orientation_name (zbar_orientation_t orient) {
     switch(orient) {
-    case ZBAR_ORIENT_UP: return("UP");
-    case ZBAR_ORIENT_RIGHT: return("RIGHT");
-    case ZBAR_ORIENT_DOWN: return("DOWN");
-    case ZBAR_ORIENT_LEFT: return("LEFT");
-    default: return("UNKNOWN");
+    case ZBAR_ORIENT_UP:
+        return("UP");
+    case ZBAR_ORIENT_RIGHT:
+        return("RIGHT");
+    case ZBAR_ORIENT_DOWN:
+        return("DOWN");
+    case ZBAR_ORIENT_LEFT:
+        return("LEFT");
+    default:
+        return("UNKNOWN");
     }
 }
 
-int _zbar_get_symbol_hash (zbar_symbol_type_t sym)
-{
+int _zbar_get_symbol_hash (zbar_symbol_type_t sym) {
     static const signed char hash[0x20] = {
         0x00, 0x01, 0x10, 0x11,   -1, 0x11, 0x16, 0x0c,
-	0x05, 0x06, 0x08,   -1, 0x04, 0x03, 0x07, 0x12,
-	  -1,   -1,   -1,   -1,   -1,   -1,   -1, 0x02,
-	  -1, 0x00, 0x12, 0x0c, 0x0b, 0x1d, 0x0a, 0x00,
-     };
+        0x05, 0x06, 0x08,   -1, 0x04, 0x03, 0x07, 0x12,
+        -1,   -1,   -1,   -1,   -1,   -1,   -1, 0x02,
+        -1, 0x00, 0x12, 0x0c, 0x0b, 0x1d, 0x0a, 0x00,
+    };
     int g0 = hash[sym & 0x1f];
     int g1 = hash[~(sym >> 4) & 0x1f];
     assert(g0 >= 0 && g1 >= 0);
@@ -112,8 +144,7 @@ int _zbar_get_symbol_hash (zbar_symbol_type_t sym)
     return((g0 + g1) & 0x1f);
 }
 
-void _zbar_symbol_free (zbar_symbol_t *sym)
-{
+void _zbar_symbol_free (zbar_symbol_t *sym) {
     if(sym->syms) {
         zbar_symbol_set_ref(sym->syms, -1);
         sym->syms = NULL;
@@ -126,55 +157,45 @@ void _zbar_symbol_free (zbar_symbol_t *sym)
 }
 
 void zbar_symbol_ref (const zbar_symbol_t *sym,
-                      int refs)
-{
+                      int refs) {
     zbar_symbol_t *ncsym = (zbar_symbol_t*)sym;
     _zbar_symbol_refcnt(ncsym, refs);
 }
 
-zbar_symbol_type_t zbar_symbol_get_type (const zbar_symbol_t *sym)
-{
+zbar_symbol_type_t zbar_symbol_get_type (const zbar_symbol_t *sym) {
     return(sym->type);
 }
 
-unsigned int zbar_symbol_get_configs (const zbar_symbol_t *sym)
-{
+unsigned int zbar_symbol_get_configs (const zbar_symbol_t *sym) {
     return(sym->configs);
 }
 
-unsigned int zbar_symbol_get_modifiers (const zbar_symbol_t *sym)
-{
+unsigned int zbar_symbol_get_modifiers (const zbar_symbol_t *sym) {
     return(sym->modifiers);
 }
 
-const char *zbar_symbol_get_data (const zbar_symbol_t *sym)
-{
+const char *zbar_symbol_get_data (const zbar_symbol_t *sym) {
     return(sym->data);
 }
 
-unsigned int zbar_symbol_get_data_length (const zbar_symbol_t *sym)
-{
+unsigned int zbar_symbol_get_data_length (const zbar_symbol_t *sym) {
     return(sym->datalen);
 }
 
-int zbar_symbol_get_count (const zbar_symbol_t *sym)
-{
+int zbar_symbol_get_count (const zbar_symbol_t *sym) {
     return(sym->cache_count);
 }
 
-int zbar_symbol_get_quality (const zbar_symbol_t *sym)
-{
+int zbar_symbol_get_quality (const zbar_symbol_t *sym) {
     return(sym->quality);
 }
 
-unsigned zbar_symbol_get_loc_size (const zbar_symbol_t *sym)
-{
+unsigned zbar_symbol_get_loc_size (const zbar_symbol_t *sym) {
     return(sym->npts);
 }
 
 int zbar_symbol_get_loc_x (const zbar_symbol_t *sym,
-                           unsigned idx)
-{
+                           unsigned idx) {
     if(idx < sym->npts)
         return(sym->pts[idx].x);
     else
@@ -182,40 +203,34 @@ int zbar_symbol_get_loc_x (const zbar_symbol_t *sym,
 }
 
 int zbar_symbol_get_loc_y (const zbar_symbol_t *sym,
-                           unsigned idx)
-{
+                           unsigned idx) {
     if(idx < sym->npts)
         return(sym->pts[idx].y);
     else
         return(-1);
 }
 
-zbar_orientation_t zbar_symbol_get_orientation (const zbar_symbol_t *sym)
-{
+zbar_orientation_t zbar_symbol_get_orientation (const zbar_symbol_t *sym) {
     return(sym->orient);
 }
 
-const zbar_symbol_t *zbar_symbol_next (const zbar_symbol_t *sym)
-{
+const zbar_symbol_t *zbar_symbol_next (const zbar_symbol_t *sym) {
     return((sym) ? sym->next : NULL);
 }
 
 const zbar_symbol_set_t*
-zbar_symbol_get_components (const zbar_symbol_t *sym)
-{
+zbar_symbol_get_components (const zbar_symbol_t *sym) {
     return(sym->syms);
 }
 
-const zbar_symbol_t *zbar_symbol_first_component (const zbar_symbol_t *sym)
-{
+const zbar_symbol_t *zbar_symbol_first_component (const zbar_symbol_t *sym) {
     return((sym && sym->syms) ? sym->syms->head : NULL);
 }
 
 
 unsigned base64_encode (char *dst,
                         const char *src,
-                        unsigned srclen)
-{
+                        unsigned srclen) {
     static const char alphabet[] =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     char *start = dst;
@@ -229,7 +244,10 @@ unsigned base64_encode (char *dst,
         *(dst++) = (srclen > 1) ? alphabet[(buf >> 6) & 0x3f] : '=';
         *(dst++) = (srclen > 2) ? alphabet[buf & 0x3f] : '=';
         if(srclen < 3) break;
-        if(!--nline) { *(dst++) = '\n'; nline = 19; }
+        if(!--nline) {
+            *(dst++) = '\n';
+            nline = 19;
+        }
     }
     *(dst++) = '\n';
     *(dst++) = '\0';
@@ -269,8 +287,7 @@ enum {
 
 char *zbar_symbol_xml (const zbar_symbol_t *sym,
                        char **buf,
-                       unsigned *len)
-{
+                       unsigned *len) {
     unsigned int datalen, maxlen;
     int i, n = 0;
 
@@ -350,8 +367,7 @@ char *zbar_symbol_xml (const zbar_symbol_t *sym,
     if(!binary) {
         memcpy(*buf + n, sym->data, sym->datalen + 1);
         n += sym->datalen;
-    }
-    else {
+    } else {
         TMPL_COPY("\n");
         n += base64_encode(*buf + n, sym->data, sym->datalen);
     }
@@ -364,15 +380,13 @@ char *zbar_symbol_xml (const zbar_symbol_t *sym,
 }
 
 
-zbar_symbol_set_t *_zbar_symbol_set_create ()
-{
+zbar_symbol_set_t *_zbar_symbol_set_create () {
     zbar_symbol_set_t *syms = calloc(1, sizeof(*syms));
     _zbar_refcnt(&syms->refcnt, 1);
     return(syms);
 }
 
-inline void _zbar_symbol_set_free (zbar_symbol_set_t *syms)
-{
+inline void _zbar_symbol_set_free (zbar_symbol_set_t *syms) {
     zbar_symbol_t *sym, *next;
     for(sym = syms->head; sym; sym = next) {
         next = sym->next;
@@ -384,21 +398,18 @@ inline void _zbar_symbol_set_free (zbar_symbol_set_t *syms)
 }
 
 void zbar_symbol_set_ref (const zbar_symbol_set_t *syms,
-                          int delta)
-{
+                          int delta) {
     zbar_symbol_set_t *ncsyms = (zbar_symbol_set_t*)syms;
     if(!_zbar_refcnt(&ncsyms->refcnt, delta) && delta <= 0)
         _zbar_symbol_set_free(ncsyms);
 }
 
-int zbar_symbol_set_get_size (const zbar_symbol_set_t *syms)
-{
+int zbar_symbol_set_get_size (const zbar_symbol_set_t *syms) {
     return(syms->nsyms);
 }
 
 const zbar_symbol_t*
-zbar_symbol_set_first_symbol (const zbar_symbol_set_t *syms)
-{
+zbar_symbol_set_first_symbol (const zbar_symbol_set_t *syms) {
     zbar_symbol_t *sym = syms->tail;
     if(sym)
         return(sym->next);
@@ -406,7 +417,6 @@ zbar_symbol_set_first_symbol (const zbar_symbol_set_t *syms)
 }
 
 const zbar_symbol_t*
-zbar_symbol_set_first_unfiltered (const zbar_symbol_set_t *syms)
-{
+zbar_symbol_set_first_unfiltered (const zbar_symbol_set_t *syms) {
     return(syms->head);
 }

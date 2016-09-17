@@ -28,10 +28,10 @@
 #ifndef DEBUG_LEVEL
 
 # ifdef __GNUC__
-    /* older versions of gcc (< 2.95) require a named varargs parameter */
+/* older versions of gcc (< 2.95) require a named varargs parameter */
 #  define dbprintf(args...) while(0)
 # else
-    /* unfortunately named vararg parameter is a gcc-specific extension */
+/* unfortunately named vararg parameter is a gcc-specific extension */
 #  define dbprintf(...) while(0)
 # endif
 

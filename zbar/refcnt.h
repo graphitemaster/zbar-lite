@@ -32,8 +32,7 @@
 typedef LONG refcnt_t;
 
 static inline int _zbar_refcnt (refcnt_t *cnt,
-                                int delta)
-{
+                                int delta) {
     int rc = -1;
     if(delta > 0)
         while(delta--)
@@ -51,8 +50,7 @@ static inline int _zbar_refcnt (refcnt_t *cnt,
 typedef int32_t refcnt_t;
 
 static inline int _zbar_refcnt (refcnt_t *cnt,
-                                int delta)
-{
+                                int delta) {
     int rc = OSAtomicAdd32Barrier(delta, cnt);
     assert(rc >= 0);
     return(rc);
@@ -66,8 +64,7 @@ typedef int refcnt_t;
 extern pthread_mutex_t _zbar_reflock;
 
 static inline int _zbar_refcnt (refcnt_t *cnt,
-                                int delta)
-{
+                                int delta) {
     pthread_mutex_lock(&_zbar_reflock);
     int rc = (*cnt += delta);
     pthread_mutex_unlock(&_zbar_reflock);
@@ -81,8 +78,7 @@ static inline int _zbar_refcnt (refcnt_t *cnt,
 typedef int refcnt_t;
 
 static inline int _zbar_refcnt (refcnt_t *cnt,
-                                int delta)
-{
+                                int delta) {
     int rc = (*cnt += delta);
     assert(rc >= 0);
     return(rc);

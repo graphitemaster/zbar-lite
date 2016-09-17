@@ -87,8 +87,7 @@ static const unsigned char parity_decode[] = {
 #ifdef DEBUG_EAN
 static unsigned char debug_buf[0x18];
 
-static inline const unsigned char *dsprintbuf(ean_decoder_t *ean)
-{
+static inline const unsigned char *dsprintbuf(ean_decoder_t *ean) {
     int i;
     for(i = 0; i < 7; i++)
         debug_buf[i] = ((ean->buf[0] < 0 || ean->buf[i] < 0)
@@ -110,8 +109,7 @@ static inline const unsigned char *dsprintbuf(ean_decoder_t *ean)
 #endif
 
 static inline int check_width (unsigned w0,
-                               unsigned w1)
-{
+                               unsigned w1) {
     unsigned dw0 = w0;
     w0 *= 8;
     w1 *= 8;
@@ -122,8 +120,7 @@ static inline int check_width (unsigned w0,
  * using preceding 4 as character width
  */
 static inline signed char aux_end (zbar_decoder_t *dcode,
-                                   unsigned char fwd)
-{
+                                   unsigned char fwd) {
     signed char code, i;
 
     /* reference width from previous character */
@@ -154,8 +151,7 @@ static inline signed char aux_end (zbar_decoder_t *dcode,
 /* determine possible auxiliary pattern
  * using current 4 as possible character
  */
-static inline signed char aux_start (zbar_decoder_t *dcode)
-{
+static inline signed char aux_start (zbar_decoder_t *dcode) {
     /* FIXME NB add-on has no guard in reverse */
     unsigned e1, e2 = get_width(dcode, 5) + get_width(dcode, 6);
     unsigned char E1;
@@ -177,8 +173,7 @@ static inline signed char aux_start (zbar_decoder_t *dcode)
             if(!E1) {
                 dbprintf(2, " [valid normal]");
                 return(0); /* normal symbol start */
-            }
-            else if(E1 == 1) {
+            } else if(E1 == 1) {
                 dbprintf(2, " [valid add-on]");
                 return(STATE_ADDON); /* add-on symbol start */
             }
@@ -192,7 +187,7 @@ static inline signed char aux_start (zbar_decoder_t *dcode)
         unsigned e3 = get_width(dcode, 6) + get_width(dcode, 7);
         unsigned e4 = get_width(dcode, 7) + get_width(dcode, 8);
         if(!decode_e(e3, dcode->ean.s4, 7) &&
-           !decode_e(e4, dcode->ean.s4, 7)) {
+                !decode_e(e4, dcode->ean.s4, 7)) {
             dbprintf(2, " [valid center]");
             return(0); /* start after center guard */
         }
@@ -203,15 +198,13 @@ static inline signed char aux_start (zbar_decoder_t *dcode)
 
 /* check addon delimiter using current 4 as character
  */
-static inline signed char aux_mid (zbar_decoder_t *dcode)
-{
+static inline signed char aux_mid (zbar_decoder_t *dcode) {
     unsigned e = get_width(dcode, 4) + get_width(dcode, 5);
     return(decode_e(e, dcode->ean.s4, 7));
 }
 
 /* attempt to decode previous 4 widths (2 bars and 2 spaces) as a character */
-static inline signed char decode4 (zbar_decoder_t *dcode)
-{
+static inline signed char decode4 (zbar_decoder_t *dcode) {
     signed char code;
 
     /* calculate similar edge measurements */
@@ -226,7 +219,7 @@ static inline signed char decode4 (zbar_decoder_t *dcode)
 
     /* create compacted encoding for direct lookup */
     code = ((decode_e(e1, dcode->ean.s4, 7) << 2) |
-             decode_e(e2, dcode->ean.s4, 7));
+            decode_e(e2, dcode->ean.s4, 7));
     if(code < 0)
         return(-1);
     dbprintf(2, " code=%x", code);
@@ -245,8 +238,8 @@ static inline signed char decode4 (zbar_decoder_t *dcode)
                        : get_width(dcode, 1) + get_width(dcode, 3));
         d2 *= 7;
         mid = (((1 << code) & 0x0420)
-                             ? 3     /* E1E2 in 33,44 */
-                             : 4);   /* E1E2 in 34,43 */
+               ? 3     /* E1E2 in 33,44 */
+               : 4);   /* E1E2 in 34,43 */
         alt = d2 > (mid * dcode->ean.s4);
         if(alt)
             code = ((code >> 1) & 3) | 0x10; /* compress code space */
@@ -259,8 +252,7 @@ static inline signed char decode4 (zbar_decoder_t *dcode)
 }
 
 static inline char ean_part_end2 (ean_decoder_t *ean,
-                                  ean_pass_t *pass)
-{
+                                  ean_pass_t *pass) {
     if(!TEST_CFG(ean->ean2_config, ZBAR_CFG_ENABLE))
         return(ZBAR_NONE);
 
@@ -281,8 +273,7 @@ static inline char ean_part_end2 (ean_decoder_t *ean,
 }
 
 static inline zbar_symbol_type_t ean_part_end4 (ean_pass_t *pass,
-                                                unsigned char fwd)
-{
+        unsigned char fwd) {
     /* extract parity bits */
     unsigned char par = ((pass->raw[1] & 0x10) >> 1 |
                          (pass->raw[2] & 0x10) >> 2 |
@@ -315,8 +306,7 @@ static inline zbar_symbol_type_t ean_part_end4 (ean_pass_t *pass,
 }
 
 static inline char ean_part_end5 (ean_decoder_t *ean,
-                                  ean_pass_t *pass)
-{
+                                  ean_pass_t *pass) {
     if(!TEST_CFG(ean->ean5_config, ZBAR_CFG_ENABLE))
         return(ZBAR_NONE);
 
@@ -351,9 +341,8 @@ static inline char ean_part_end5 (ean_decoder_t *ean,
 }
 
 static inline zbar_symbol_type_t ean_part_end7 (ean_decoder_t *ean,
-                                                ean_pass_t *pass,
-                                                unsigned char fwd)
-{
+        ean_pass_t *pass,
+        unsigned char fwd) {
     /* calculate parity index */
     unsigned char par = ((fwd)
                          ? ((pass->raw[1] & 0x10) << 1 |
@@ -412,8 +401,7 @@ static inline zbar_symbol_type_t ean_part_end7 (ean_decoder_t *ean,
 
 /* update state for one of 4 parallel passes */
 static inline zbar_symbol_type_t decode_pass (zbar_decoder_t *dcode,
-                                              ean_pass_t *pass)
-{
+        ean_pass_t *pass) {
     unsigned char idx, fwd;
     pass->state++;
     idx = pass->state & STATE_IDX;
@@ -442,26 +430,24 @@ static inline zbar_symbol_type_t decode_pass (zbar_decoder_t *dcode,
                 pass->state += 2;
                 idx += 2;
             }
-        }
-        else if((idx == 0x10 || idx == 0x11) &&
-                TEST_CFG(dcode->ean.ean8_config, ZBAR_CFG_ENABLE) &&
-                !aux_end(dcode, fwd)) {
+        } else if((idx == 0x10 || idx == 0x11) &&
+                  TEST_CFG(dcode->ean.ean8_config, ZBAR_CFG_ENABLE) &&
+                  !aux_end(dcode, fwd)) {
             dbprintf(2, " fwd=%x", fwd);
             zbar_symbol_type_t part = ean_part_end4(pass, fwd);
             if(part)
                 dcode->ean.direction = (pass->state & STATE_REV) != 0;
             pass->state = -1;
             return(part);
-        }
-	else if((idx == 0x18 || idx == 0x19)) {
-	  zbar_symbol_type_t part = ZBAR_NONE;
-	  dbprintf(2, " fwd=%x", fwd);
-	  if(!aux_end(dcode, fwd) && pass->raw[5] != 0xff)
-	    part = ean_part_end7(&dcode->ean, pass, fwd);
-	  if(part)
-	    dcode->ean.direction = (pass->state & STATE_REV) != 0;
-	  pass->state = -1;
-	  return(part);
+        } else if((idx == 0x18 || idx == 0x19)) {
+            zbar_symbol_type_t part = ZBAR_NONE;
+            dbprintf(2, " fwd=%x", fwd);
+            if(!aux_end(dcode, fwd) && pass->raw[5] != 0xff)
+                part = ean_part_end7(&dcode->ean, pass, fwd);
+            if(part)
+                dcode->ean.direction = (pass->state & STATE_REV) != 0;
+            pass->state = -1;
+            return(part);
         }
     }
 
@@ -480,8 +466,7 @@ static inline zbar_symbol_type_t decode_pass (zbar_decoder_t *dcode,
             if(pass->state < 0)
                 return(0);
             idx = pass->state & STATE_IDX;
-        }
-        else {
+        } else {
             w = check_width(w, dcode->ean.s4);
             if(w)
                 pass->width = (pass->width + dcode->ean.s4 * 3) / 4;
@@ -492,8 +477,8 @@ static inline zbar_symbol_type_t decode_pass (zbar_decoder_t *dcode,
         else
             dbprintf(2, " [bad width]");
 
-        if((code < 0 && idx != 0x10) || 
-           (idx > 0 && (pass->state & STATE_ADDON) && aux_mid(dcode)))
+        if((code < 0 && idx != 0x10) ||
+                (idx > 0 && (pass->state & STATE_ADDON) && aux_mid(dcode)))
             pass->state = -1;
         else if(code < 0)
             pass->raw[5] = 0xff;
@@ -512,8 +497,7 @@ static inline zbar_symbol_type_t decode_pass (zbar_decoder_t *dcode,
 }
 
 static inline signed char ean_verify_checksum (ean_decoder_t *ean,
-                                               int n)
-{
+        int n) {
     unsigned char chk = 0;
     unsigned char i, d;
     for(i = 0; i < n; i++) {
@@ -544,8 +528,7 @@ static inline signed char ean_verify_checksum (ean_decoder_t *ean,
     return(0);
 }
 
-static inline unsigned char isbn10_calc_checksum (ean_decoder_t *ean)
-{
+static inline unsigned char isbn10_calc_checksum (ean_decoder_t *ean) {
     unsigned int chk = 0;
     unsigned char w;
     for(w = 10; w > 1; w--) {
@@ -564,8 +547,7 @@ static inline unsigned char isbn10_calc_checksum (ean_decoder_t *ean)
 }
 
 static inline void ean_expand_upce (ean_decoder_t *ean,
-                                    ean_pass_t *pass)
-{
+                                    ean_pass_t *pass) {
     int i = 0;
     unsigned char decode;
     /* parity encoded digit is checksum */
@@ -587,25 +569,24 @@ static inline void ean_expand_upce (ean_decoder_t *ean,
 }
 
 static inline zbar_symbol_type_t integrate_partial (ean_decoder_t *ean,
-                                                    ean_pass_t *pass,
-                                                    zbar_symbol_type_t part)
-{
+        ean_pass_t *pass,
+        zbar_symbol_type_t part) {
     /* copy raw data into holding buffer */
     /* if same partial is not consistent, reset others */
     dbprintf(2, " integrate part=%x (%s)", part, dsprintbuf(ean));
     signed char i, j;
 
     if((ean->left && ((part & ZBAR_SYMBOL) != ean->left)) ||
-       (ean->right && ((part & ZBAR_SYMBOL) != ean->right))) {
+            (ean->right && ((part & ZBAR_SYMBOL) != ean->right))) {
         /* partial mismatch - reset collected parts */
         dbprintf(2, " rst(type %x %x)", ean->left, ean->right);
         ean->left = ean->right = ZBAR_NONE;
     }
 
     if((ean->left || ean->right) &&
-       !check_width(ean->width, pass->width)) {
-      dbprintf(2, " rst(width %d)", pass->width);
-      ean->left = ean->right = ZBAR_NONE;
+            !check_width(ean->width, pass->width)) {
+        dbprintf(2, " rst(width %d)", pass->width);
+        ean->left = ean->right = ZBAR_NONE;
     }
 
 
@@ -623,8 +604,7 @@ static inline zbar_symbol_type_t integrate_partial (ean_decoder_t *ean,
         }
         ean->right = part;
         part &= ean->left;  /* FIXME!? */
-    }
-    else if(part == ZBAR_EAN13 || part == ZBAR_EAN8) /* EAN_LEFT */ {
+    } else if(part == ZBAR_EAN13 || part == ZBAR_EAN8) { /* EAN_LEFT */
         j = (part - 1) >> 1;
         for(i = part >> 1; j >= 0; i--, j--) {
             unsigned char digit = pass->raw[i] & 0xf;
@@ -637,13 +617,11 @@ static inline zbar_symbol_type_t integrate_partial (ean_decoder_t *ean,
         }
         ean->left = part;
         part &= ean->right;  /* FIXME!? */
-    }
-    else if(part != ZBAR_UPCE) /* add-ons */ {
+    } else if(part != ZBAR_UPCE) { /* add-ons */
         for(i = part; i > 0; i--)
             ean->buf[i - 1] = pass->raw[i] & 0xf;
         ean->left = part;
-    }
-    else
+    } else
         ean_expand_upce(ean, pass);
 
     ean->width = pass->width;
@@ -652,13 +630,13 @@ static inline zbar_symbol_type_t integrate_partial (ean_decoder_t *ean,
         part = ZBAR_PARTIAL;
 
     if(((part == ZBAR_EAN13 ||
-         part == ZBAR_UPCE) && ean_verify_checksum(ean, 12)) ||
-       (part == ZBAR_EAN8 && ean_verify_checksum(ean, 7))) {
+            part == ZBAR_UPCE) && ean_verify_checksum(ean, 12)) ||
+            (part == ZBAR_EAN8 && ean_verify_checksum(ean, 7))) {
         /* invalid checksum */
         if(ean->right)
-	  ean->left = ZBAR_NONE;
+            ean->left = ZBAR_NONE;
         else
-	  ean->right = ZBAR_NONE;
+            ean->right = ZBAR_NONE;
         part = ZBAR_NONE;
     }
 
@@ -669,14 +647,13 @@ static inline zbar_symbol_type_t integrate_partial (ean_decoder_t *ean,
         else if(ean->buf[0] == 9 && ean->buf[1] == 7) {
             /* ISBN-10 has priority over ISBN-13(?) */
             if(ean->buf[2] == 8 &&
-               TEST_CFG(ean->isbn10_config, ZBAR_CFG_ENABLE))
+                    TEST_CFG(ean->isbn10_config, ZBAR_CFG_ENABLE))
                 part = ZBAR_ISBN10;
             else if((ean->buf[2] == 8 || ean->buf[2] == 9) &&
-               TEST_CFG(ean->isbn13_config, ZBAR_CFG_ENABLE))
+                    TEST_CFG(ean->isbn13_config, ZBAR_CFG_ENABLE))
                 part = ZBAR_ISBN13;
         }
-    }
-    else if(part == ZBAR_UPCE) {
+    } else if(part == ZBAR_UPCE) {
         if(TEST_CFG(ean->upce_config, ZBAR_CFG_ENABLE)) {
             /* UPC-E was decompressed for checksum verification,
              * but user requested compressed result
@@ -685,8 +662,7 @@ static inline zbar_symbol_type_t integrate_partial (ean_decoder_t *ean,
             for(i = 2; i < 8; i++)
                 ean->buf[i] = pass->raw[i - 1] & 0xf;
             ean->buf[i] = pass->raw[0] & 0xf;
-        }
-        else if(TEST_CFG(ean->upca_config, ZBAR_CFG_ENABLE))
+        } else if(TEST_CFG(ean->upca_config, ZBAR_CFG_ENABLE))
             /* UPC-E reported as UPC-A has priority over EAN-13 */
             part = ZBAR_UPCA;
         else if(TEST_CFG(ean->ean13_config, ZBAR_CFG_ENABLE))
@@ -702,8 +678,7 @@ static inline zbar_symbol_type_t integrate_partial (ean_decoder_t *ean,
 
 /* copy result to output buffer */
 static inline void postprocess (zbar_decoder_t *dcode,
-                                zbar_symbol_type_t sym)
-{
+                                zbar_symbol_type_t sym) {
     ean_decoder_t *ean = &dcode->ean;
     zbar_symbol_type_t base = sym;
     int i = 0, j = 0;
@@ -713,22 +688,21 @@ static inline void postprocess (zbar_decoder_t *dcode,
         else if(base == ZBAR_UPCE) {
             i = 1;
             base--;
-        }
-        else if(base == ZBAR_ISBN13)
+        } else if(base == ZBAR_ISBN13)
             base = ZBAR_EAN13;
         else if(base == ZBAR_ISBN10)
             i = 3;
 
         if(base == ZBAR_ISBN10 ||
-           (base > ZBAR_EAN5 &&
-            !TEST_CFG(ean_get_config(ean, sym), ZBAR_CFG_EMIT_CHECK)))
+                (base > ZBAR_EAN5 &&
+                 !TEST_CFG(ean_get_config(ean, sym), ZBAR_CFG_EMIT_CHECK)))
             base--;
 
         for(; j < base && ean->buf[i] >= 0; i++, j++)
             dcode->buf[j] = ean->buf[i] + '0';
 
         if(sym == ZBAR_ISBN10 && j == 9 &&
-           TEST_CFG(ean->isbn10_config, ZBAR_CFG_EMIT_CHECK))
+                TEST_CFG(ean->isbn10_config, ZBAR_CFG_EMIT_CHECK))
             /* recalculate ISBN-10 check digit */
             dcode->buf[j++] = isbn10_calc_checksum(ean);
     }
@@ -739,8 +713,7 @@ static inline void postprocess (zbar_decoder_t *dcode,
     dbprintf(2, " base=%d j=%d (%s)", base, j, dcode->buf);
 }
 
-zbar_symbol_type_t _zbar_decode_ean (zbar_decoder_t *dcode)
-{
+zbar_symbol_type_t _zbar_decode_ean (zbar_decoder_t *dcode) {
     /* process upto 4 separate passes */
     zbar_symbol_type_t sym = ZBAR_NONE;
     unsigned char pass_idx = dcode->idx & 3;
@@ -753,8 +726,7 @@ zbar_symbol_type_t _zbar_decode_ean (zbar_decoder_t *dcode)
     for(i = 0; i < 4; i++) {
         ean_pass_t *pass = &dcode->ean.pass[i];
         if(pass->state >= 0 ||
-           i == pass_idx)
-        {
+                i == pass_idx) {
             zbar_symbol_type_t part;
             dbprintf(2, "      ean[%x/%x]: idx=%x st=%d s=%d",
                      i, pass_idx, dcode->idx, pass->state, dcode->ean.s4);

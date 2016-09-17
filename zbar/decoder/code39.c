@@ -127,9 +127,8 @@ static const unsigned char code39_characters[NUM_CHARS] =
     "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-. $/+%*";
 
 static inline unsigned char code39_decode1 (unsigned char enc,
-                                            unsigned e,
-                                            unsigned s)
-{
+        unsigned e,
+        unsigned s) {
     unsigned char E = decode_e(e, s, 72);
     if(E > 18)
         return(0xff);
@@ -137,14 +136,12 @@ static inline unsigned char code39_decode1 (unsigned char enc,
     if(E > 6) {
         enc |= 1;
         dbprintf(2, "1");
-    }
-    else
+    } else
         dbprintf(2, "0");
     return(enc);
 }
 
-static inline signed char code39_decode9 (zbar_decoder_t *dcode)
-{
+static inline signed char code39_decode9 (zbar_decoder_t *dcode) {
     code39_decoder_t *dcode39 = &dcode->code39;
 
     if(dcode39->s9 < 9)
@@ -188,8 +185,7 @@ static inline signed char code39_decode9 (zbar_decoder_t *dcode)
     return((dcode39->direction) ? c->rev : c->fwd);
 }
 
-static inline signed char code39_decode_start (zbar_decoder_t *dcode)
-{
+static inline signed char code39_decode_start (zbar_decoder_t *dcode) {
     code39_decoder_t *dcode39 = &dcode->code39;
     dbprintf(2, " s=%d ", dcode39->s9);
 
@@ -213,8 +209,7 @@ static inline signed char code39_decode_start (zbar_decoder_t *dcode)
     return(ZBAR_PARTIAL);
 }
 
-static inline int code39_postprocess (zbar_decoder_t *dcode)
-{
+static inline int code39_postprocess (zbar_decoder_t *dcode) {
     code39_decoder_t *dcode39 = &dcode->code39;
     dcode->direction = 1 - 2 * dcode39->direction;
     int i;
@@ -242,16 +237,14 @@ static inline int code39_postprocess (zbar_decoder_t *dcode)
 
 static inline int
 check_width (unsigned ref,
-             unsigned w)
-{
+             unsigned w) {
     unsigned dref = ref;
     ref *= 4;
     w *= 4;
     return(ref - dref <= w && w <= ref + dref);
 }
 
-zbar_symbol_type_t _zbar_decode_code39 (zbar_decoder_t *dcode)
-{
+zbar_symbol_type_t _zbar_decode_code39 (zbar_decoder_t *dcode) {
     code39_decoder_t *dcode39 = &dcode->code39;
 
     /* update latest character width */
@@ -275,7 +268,7 @@ zbar_symbol_type_t _zbar_decode_code39 (zbar_decoder_t *dcode)
     if(dcode39->element == 10) {
         unsigned space = get_width(dcode, 0);
         if(dcode39->character &&
-           dcode->buf[dcode39->character - 1] == 0x2b) {  /* STOP */
+                dcode->buf[dcode39->character - 1] == 0x2b) {  /* STOP */
             /* trim STOP character */
             dcode39->character--;
             zbar_symbol_type_t sym = ZBAR_NONE;
@@ -332,8 +325,7 @@ zbar_symbol_type_t _zbar_decode_code39 (zbar_decoder_t *dcode)
         release_lock(dcode, ZBAR_CODE39);
         dcode39->character = -1;
         return(ZBAR_NONE);
-    }
-    else {
+    } else {
         zassert(c < 0x2c, ZBAR_NONE, "c=%02x s9=%x\n", c, dcode39->s9);
         dbprintf(2, "\n");
     }

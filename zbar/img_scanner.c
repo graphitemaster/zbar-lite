@@ -111,8 +111,7 @@ struct zbar_image_scanner_s {
 };
 
 void _zbar_image_scanner_recycle_syms (zbar_image_scanner_t *iscn,
-                                       zbar_symbol_t *sym)
-{
+                                       zbar_symbol_t *sym) {
     zbar_symbol_t *next = NULL;
     for(; sym; sym = next) {
         next = sym->next;
@@ -122,8 +121,7 @@ void _zbar_image_scanner_recycle_syms (zbar_image_scanner_t *iscn,
              */
             assert(sym->data_alloc);
             sym->next = NULL;
-        }
-        else {
+        } else {
             int i;
             recycle_bucket_t *bucket;
             /* recycle unreferenced symbol */
@@ -159,8 +157,7 @@ void _zbar_image_scanner_recycle_syms (zbar_image_scanner_t *iscn,
 }
 
 static inline int recycle_syms (zbar_image_scanner_t *iscn,
-                                zbar_symbol_set_t *syms)
-{
+                                zbar_symbol_set_t *syms) {
     if(_zbar_refcnt(&syms->refcnt, -1))
         return(1);
 
@@ -171,15 +168,13 @@ static inline int recycle_syms (zbar_image_scanner_t *iscn,
 }
 
 inline void zbar_image_scanner_recycle_image (zbar_image_scanner_t *iscn,
-                                              zbar_image_t *img)
-{
+        zbar_image_t *img) {
     zbar_symbol_set_t *syms = iscn->syms;
     if(syms && syms->refcnt) {
         if(recycle_syms(iscn, syms)) {
             STAT(iscn_syms_inuse);
             iscn->syms = NULL;
-        }
-        else
+        } else
             STAT(iscn_syms_recycle);
     }
 
@@ -201,8 +196,7 @@ inline void zbar_image_scanner_recycle_image (zbar_image_scanner_t *iscn,
 inline zbar_symbol_t*
 _zbar_image_scanner_alloc_sym (zbar_image_scanner_t *iscn,
                                zbar_symbol_type_t type,
-                               int datalen)
-{
+                               int datalen) {
     /* recycle old or alloc new symbol */
     zbar_symbol_t *sym = NULL;
     int i;
@@ -221,8 +215,7 @@ _zbar_image_scanner_alloc_sym (zbar_image_scanner_t *iscn,
         sym->next = NULL;
         assert(iscn->recycle[i].nsyms);
         iscn->recycle[i].nsyms--;
-    }
-    else {
+    } else {
         sym = calloc(1, sizeof(zbar_symbol_t));
         STAT(sym_new);
     }
@@ -244,8 +237,7 @@ _zbar_image_scanner_alloc_sym (zbar_image_scanner_t *iscn,
             sym->data_alloc = datalen;
             sym->data = malloc(datalen);
         }
-    }
-    else {
+    } else {
         if(sym->data)
             free(sym->data);
         sym->data = NULL;
@@ -255,14 +247,13 @@ _zbar_image_scanner_alloc_sym (zbar_image_scanner_t *iscn,
 }
 
 static inline zbar_symbol_t *cache_lookup (zbar_image_scanner_t *iscn,
-                                           zbar_symbol_t *sym)
-{
+        zbar_symbol_t *sym) {
     /* search for matching entry in cache */
     zbar_symbol_t **entry = &iscn->cache;
     while(*entry) {
         if((*entry)->type == sym->type &&
-           (*entry)->datalen == sym->datalen &&
-           !memcmp((*entry)->data, sym->data, sym->datalen))
+                (*entry)->datalen == sym->datalen &&
+                !memcmp((*entry)->data, sym->data, sym->datalen))
             break;
         if((sym->time - (*entry)->time) > CACHE_TIMEOUT) {
             /* recycle stale cache entry */
@@ -270,16 +261,14 @@ static inline zbar_symbol_t *cache_lookup (zbar_image_scanner_t *iscn,
             (*entry)->next = NULL;
             _zbar_image_scanner_recycle_syms(iscn, *entry);
             *entry = next;
-        }
-        else
+        } else
             entry = &(*entry)->next;
     }
     return(*entry);
 }
 
 static inline void cache_sym (zbar_image_scanner_t *iscn,
-                              zbar_symbol_t *sym)
-{
+                              zbar_symbol_t *sym) {
     if(iscn->enable_cache) {
         uint32_t age, near_thresh, far_thresh, dup;
         zbar_symbol_t *entry = cache_lookup(iscn, sym);
@@ -307,19 +296,16 @@ static inline void cache_sym (zbar_image_scanner_t *iscn,
             int type = sym->type;
             int h = _zbar_get_symbol_hash(type);
             entry->cache_count = -iscn->sym_configs[0][h];
-        }
-        else if(dup || near_thresh)
+        } else if(dup || near_thresh)
             entry->cache_count++;
 
         sym->cache_count = entry->cache_count;
-    }
-    else
+    } else
         sym->cache_count = 0;
 }
 
 void _zbar_image_scanner_add_sym(zbar_image_scanner_t *iscn,
-                                 zbar_symbol_t *sym)
-{
+                                 zbar_symbol_t *sym) {
     zbar_symbol_set_t *syms;
     cache_sym(iscn, sym);
 
@@ -327,8 +313,7 @@ void _zbar_image_scanner_add_sym(zbar_image_scanner_t *iscn,
     if(sym->cache_count || !syms->tail) {
         sym->next = syms->head;
         syms->head = sym;
-    }
-    else {
+    } else {
         sym->next = syms->tail->next;
         syms->tail->next = sym;
     }
@@ -349,8 +334,7 @@ extern qr_finder_line *_zbar_decoder_get_qr_finder_line(zbar_decoder_t*);
     ((val) >> (prec)),         \
         (1000 * ((val) & ((1 << (prec)) - 1)) / (1 << (prec)))
 
-static inline void qr_handler (zbar_image_scanner_t *iscn)
-{
+static inline void qr_handler (zbar_image_scanner_t *iscn) {
     unsigned u;
     int vert;
     qr_finder_line *line = _zbar_decoder_get_qr_finder_line(iscn->dcode);
@@ -380,8 +364,7 @@ static inline void qr_handler (zbar_image_scanner_t *iscn)
 }
 #endif
 
-static void symbol_handler (zbar_decoder_t *dcode)
-{
+static void symbol_handler (zbar_decoder_t *dcode) {
     zbar_image_scanner_t *iscn = zbar_decoder_get_userdata(dcode);
     zbar_symbol_type_t type = zbar_decoder_get_type(dcode);
     int x = 0, y = 0, dir;
@@ -405,8 +388,7 @@ static void symbol_handler (zbar_decoder_t *dcode)
         if(iscn->dx) {
             x = u;
             y = iscn->v;
-        }
-        else {
+        } else {
             x = iscn->v;
             y = u;
         }
@@ -424,8 +406,8 @@ static void symbol_handler (zbar_decoder_t *dcode)
     /* FIXME need better symbol matching */
     for(sym = iscn->syms->head; sym; sym = sym->next)
         if(sym->type == type &&
-           sym->datalen == datalen &&
-           !memcmp(sym->data, data, datalen)) {
+                sym->datalen == datalen &&
+                !memcmp(sym->data, data, datalen)) {
             sym->quality++;
             zprintf(224, "dup symbol @(%d,%d): dup %s: %.20s\n",
                     x, y, zbar_get_symbol_name(type), data);
@@ -456,8 +438,7 @@ static void symbol_handler (zbar_decoder_t *dcode)
     _zbar_image_scanner_add_sym(iscn, sym);
 }
 
-zbar_image_scanner_t *zbar_image_scanner_create ()
-{
+zbar_image_scanner_t *zbar_image_scanner_create () {
     zbar_image_scanner_t *iscn = calloc(1, sizeof(zbar_image_scanner_t));
     if(!iscn)
         return(NULL);
@@ -489,8 +470,7 @@ zbar_image_scanner_t *zbar_image_scanner_create ()
 }
 
 #ifndef NO_STATS
-static inline void dump_stats (const zbar_image_scanner_t *iscn)
-{
+static inline void dump_stats (const zbar_image_scanner_t *iscn) {
     int i;
     zprintf(1, "symbol sets allocated   = %-4d\n", iscn->stat_syms_new);
     zprintf(1, "    scanner syms in use = %-4d\trecycled  = %-4d\n",
@@ -504,8 +484,7 @@ static inline void dump_stats (const zbar_image_scanner_t *iscn)
 }
 #endif
 
-void zbar_image_scanner_destroy (zbar_image_scanner_t *iscn)
-{
+void zbar_image_scanner_destroy (zbar_image_scanner_t *iscn) {
     int i;
     dump_stats(iscn);
     if(iscn->syms) {
@@ -540,8 +519,7 @@ void zbar_image_scanner_destroy (zbar_image_scanner_t *iscn)
 zbar_image_data_handler_t*
 zbar_image_scanner_set_data_handler (zbar_image_scanner_t *iscn,
                                      zbar_image_data_handler_t *handler,
-                                     const void *userdata)
-{
+                                     const void *userdata) {
     zbar_image_data_handler_t *result = iscn->handler;
     iscn->handler = handler;
     iscn->userdata = userdata;
@@ -551,8 +529,7 @@ zbar_image_scanner_set_data_handler (zbar_image_scanner_t *iscn,
 int zbar_image_scanner_set_config (zbar_image_scanner_t *iscn,
                                    zbar_symbol_type_t sym,
                                    zbar_config_t cfg,
-                                   int val)
-{
+                                   int val) {
     if((sym == 0 || sym == ZBAR_COMPOSITE) && cfg == ZBAR_CFG_ENABLE) {
         iscn->ean_config = !!val;
         if(sym)
@@ -570,8 +547,7 @@ int zbar_image_scanner_set_config (zbar_image_scanner_t *iscn,
         if(sym > ZBAR_PARTIAL) {
             i = _zbar_get_symbol_hash(sym);
             iscn->sym_configs[c][i] = val;
-        }
-        else
+        } else
             for(i = 0; i < NUM_SYMS; i++)
                 iscn->sym_configs[c][i] = val;
         return(0);
@@ -600,8 +576,7 @@ int zbar_image_scanner_set_config (zbar_image_scanner_t *iscn,
 }
 
 void zbar_image_scanner_enable_cache (zbar_image_scanner_t *iscn,
-                                      int enable)
-{
+                                      int enable) {
     if(iscn->cache) {
         /* recycle all cached syms */
         _zbar_image_scanner_recycle_syms(iscn, iscn->cache);
@@ -611,13 +586,11 @@ void zbar_image_scanner_enable_cache (zbar_image_scanner_t *iscn,
 }
 
 const zbar_symbol_set_t *
-zbar_image_scanner_get_results (const zbar_image_scanner_t *iscn)
-{
+zbar_image_scanner_get_results (const zbar_image_scanner_t *iscn) {
     return(iscn->syms);
 }
 
-static inline void quiet_border (zbar_image_scanner_t *iscn)
-{
+static inline void quiet_border (zbar_image_scanner_t *iscn) {
     /* flush scanner pipeline */
     zbar_scanner_t *scn = iscn->scn;
     zbar_scanner_flush(scn);
@@ -646,8 +619,7 @@ static inline int _zbar_timer_now() {
 #endif
 
 int zbar_scan_image (zbar_image_scanner_t *iscn,
-                     zbar_image_t *img)
-{
+                     zbar_image_t *img) {
     zbar_symbol_set_t *syms;
     const uint8_t *data;
     zbar_scanner_t *scn = iscn->scn;
@@ -665,7 +637,7 @@ int zbar_scan_image (zbar_image_scanner_t *iscn,
 
     /* image must be in grayscale format */
     if(img->format != fourcc('Y','8','0','0') &&
-       img->format != fourcc('G','R','E','Y'))
+            img->format != fourcc('G','R','E','Y'))
         return(-1);
     iscn->img = img;
 
@@ -676,8 +648,7 @@ int zbar_scan_image (zbar_image_scanner_t *iscn,
         syms = iscn->syms = _zbar_symbol_set_create();
         STAT(syms_new);
         zbar_symbol_set_ref(syms, 1);
-    }
-    else
+    } else
         zbar_symbol_set_ref(syms, 2);
     img->syms = syms;
 
@@ -805,12 +776,11 @@ int zbar_scan_image (zbar_image_scanner_t *iscn,
         for(symp = &syms->head; *symp; ) {
             zbar_symbol_t *sym = *symp;
             if(sym->cache_count <= 0 &&
-               ((sym->type < ZBAR_COMPOSITE && sym->type > ZBAR_PARTIAL) ||
-                sym->type == ZBAR_DATABAR ||
-                sym->type == ZBAR_DATABAR_EXP ||
-                sym->type == ZBAR_CODABAR))
-            {
-	        if((sym->type == ZBAR_CODABAR || filter) && sym->quality < 4) {
+                    ((sym->type < ZBAR_COMPOSITE && sym->type > ZBAR_PARTIAL) ||
+                     sym->type == ZBAR_DATABAR ||
+                     sym->type == ZBAR_DATABAR_EXP ||
+                     sym->type == ZBAR_CODABAR)) {
+                if((sym->type == ZBAR_CODABAR || filter) && sym->quality < 4) {
                     if(iscn->enable_cache) {
                         /* revert cache update */
                         zbar_symbol_t *entry = cache_lookup(iscn, sym);
@@ -826,10 +796,8 @@ int zbar_scan_image (zbar_image_scanner_t *iscn,
                     sym->next = NULL;
                     _zbar_image_scanner_recycle_syms(iscn, sym);
                     continue;
-                }
-                else if(sym->type < ZBAR_COMPOSITE &&
-                        sym->type != ZBAR_ISBN10)
-                {
+                } else if(sym->type < ZBAR_COMPOSITE &&
+                          sym->type != ZBAR_ISBN10) {
                     if(sym->type > ZBAR_EAN5)
                         nean++;
                     else
@@ -853,8 +821,7 @@ int zbar_scan_image (zbar_image_scanner_t *iscn,
                         addon = sym;
                     else
                         ean = sym;
-                }
-                else
+                } else
                     symp = &sym->next;
             }
             assert(ean);

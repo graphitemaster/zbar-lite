@@ -110,8 +110,7 @@ extern int zbar_image_write_png(const zbar_image_t*, const char*);
 #endif
 
 static inline void _zbar_image_refcnt (zbar_image_t *img,
-                                       int delta)
-{
+                                       int delta) {
     if(!_zbar_refcnt(&img->refcnt, delta) && delta <= 0) {
         if(img->cleanup)
             img->cleanup(img);
@@ -121,16 +120,14 @@ static inline void _zbar_image_refcnt (zbar_image_t *img,
 }
 
 static inline void _zbar_image_swap_symbols (zbar_image_t *a,
-                                             zbar_image_t *b)
-{
+        zbar_image_t *b) {
     zbar_symbol_set_t *tmp = a->syms;
     a->syms = b->syms;
     b->syms = tmp;
 }
 
 static inline void _zbar_image_copy_size (zbar_image_t *dst,
-                                          const zbar_image_t *src)
-{
+        const zbar_image_t *src) {
     dst->width = src->width;
     dst->height = src->height;
     dst->crop_x = src->crop_x;

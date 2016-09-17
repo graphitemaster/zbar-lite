@@ -89,10 +89,10 @@ extern int _zbar_verbosity;
 #ifdef ZNO_MESSAGES
 
 # ifdef __GNUC__
-    /* older versions of gcc (< 2.95) require a named varargs parameter */
+/* older versions of gcc (< 2.95) require a named varargs parameter */
 #  define zprintf(args...)
 # else
-    /* unfortunately named vararg parameter is a gcc-specific extension */
+/* unfortunately named vararg parameter is a gcc-specific extension */
 #  define zprintf(...)
 # endif
 
@@ -117,8 +117,7 @@ extern int _zbar_verbosity;
 #endif
 
 static inline int err_copy (void *dst_c,
-                            void *src_c)
-{
+                            void *src_c) {
     errinfo_t *dst = dst_c;
     errinfo_t *src = src_c;
     assert(dst->magic == ERRINFO_MAGIC);
@@ -139,8 +138,7 @@ static inline int err_capture (const void *container,
                                errsev_t sev,
                                zbar_error_t type,
                                const char *func,
-                               const char *detail)
-{
+                               const char *detail) {
     errinfo_t *err = (errinfo_t*)container;
     assert(err->magic == ERRINFO_MAGIC);
 #ifdef HAVE_ERRNO_H
@@ -165,8 +163,7 @@ static inline int err_capture_str (const void *container,
                                    zbar_error_t type,
                                    const char *func,
                                    const char *detail,
-                                   const char *arg)
-{
+                                   const char *arg) {
     errinfo_t *err = (errinfo_t*)container;
     assert(err->magic == ERRINFO_MAGIC);
     if(err->arg_str)
@@ -180,8 +177,7 @@ static inline int err_capture_int (const void *container,
                                    zbar_error_t type,
                                    const char *func,
                                    const char *detail,
-                                   int arg)
-{
+                                   int arg) {
     errinfo_t *err = (errinfo_t*)container;
     assert(err->magic == ERRINFO_MAGIC);
     err->arg_int = arg;
@@ -193,8 +189,7 @@ static inline int err_capture_num (const void *container,
                                    zbar_error_t type,
                                    const char *func,
                                    const char *detail,
-                                   int num)
-{
+                                   int num) {
     errinfo_t *err = (errinfo_t*)container;
     assert(err->magic == ERRINFO_MAGIC);
     err->errnum = num;
@@ -202,14 +197,12 @@ static inline int err_capture_num (const void *container,
 }
 
 static inline void err_init (errinfo_t *err,
-                             errmodule_t module)
-{
+                             errmodule_t module) {
     err->magic = ERRINFO_MAGIC;
     err->module = module;
 }
 
-static inline void err_cleanup (errinfo_t *err)
-{
+static inline void err_cleanup (errinfo_t *err) {
     assert(err->magic == ERRINFO_MAGIC);
     if(err->buf) {
         free(err->buf);

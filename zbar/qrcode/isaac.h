@@ -23,13 +23,13 @@ typedef struct isaac_ctx isaac_ctx;
     ISAAC requires an amortized 18.75 instructions to produce a 32-bit value.
     There are no cycles in ISAAC shorter than 2**40 values.
     The expected cycle length is 2**8295 values.*/
-struct isaac_ctx{
-  unsigned n;
-  unsigned r[ISAAC_SZ];
-  unsigned m[ISAAC_SZ];
-  unsigned a;
-  unsigned b;
-  unsigned c;
+struct isaac_ctx {
+    unsigned n;
+    unsigned r[ISAAC_SZ];
+    unsigned m[ISAAC_SZ];
+    unsigned a;
+    unsigned b;
+    unsigned c;
 };
 
 

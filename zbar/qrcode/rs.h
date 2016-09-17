@@ -29,14 +29,14 @@
 
 typedef struct rs_gf256 rs_gf256;
 
-struct rs_gf256{
-  /*A logarithm table in GF(2**8).*/
-  unsigned char log[256];
-  /*An exponential table in GF(2**8): exp[i] contains x^i reduced modulo the
-     irreducible primitive polynomial used to define the field.
-    The extra 256 entries are used to do arithmetic mod 255, since some extra
-     table lookups are generally faster than doing the modulus.*/
-  unsigned char exp[511];
+struct rs_gf256 {
+    /*A logarithm table in GF(2**8).*/
+    unsigned char log[256];
+    /*An exponential table in GF(2**8): exp[i] contains x^i reduced modulo the
+       irreducible primitive polynomial used to define the field.
+      The extra 256 entries are used to do arithmetic mod 255, since some extra
+       table lookups are generally faster than doing the modulus.*/
+    unsigned char exp[511];
 };
 
 /*Initialize discrete logarithm tables for GF(2**8) using a given primitive
@@ -51,16 +51,16 @@ void rs_gf256_init(rs_gf256 *_gf,unsigned _ppoly);
   Returns the number of errors corrected if successful, or a negative number if
    the message could not be corrected because too many errors were detected.*/
 int rs_correct(const rs_gf256 *_gf,int _m0,unsigned char *_data,int _ndata,
- int _npar,const unsigned char *_erasures,int _nerasures);
+               int _npar,const unsigned char *_erasures,int _nerasures);
 
 /*Create an _npar-coefficient generator polynomial for a Reed-Solomon code with
    _npar<256 parity bytes.*/
 void rs_compute_genpoly(const rs_gf256 *_gf,int _m0,
- unsigned char *_genpoly,int _npar);
+                        unsigned char *_genpoly,int _npar);
 
 /*Adds _npar<=_ndata parity bytes to an _ndata-_npar byte message.
   _data must contain room for _ndata<256 bytes.*/
 void rs_encode(const rs_gf256 *_gf,unsigned char *_data,int _ndata,
- const unsigned char *_genpoly,int _npar);
+               const unsigned char *_genpoly,int _npar);
 
 #endif

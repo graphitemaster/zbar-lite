@@ -69,27 +69,23 @@ typedef struct zbar_thread_s {
 
 #if defined(_WIN32)
 
-static inline void _zbar_thread_init (zbar_thread_t *thr)
-{
+static inline void _zbar_thread_init (zbar_thread_t *thr) {
     thr->running = 1;
     _zbar_event_trigger(&thr->activity);
 }
 
-static inline zbar_thread_id_t _zbar_thread_self ()
-{
+static inline zbar_thread_id_t _zbar_thread_self () {
     return(GetCurrentThreadId());
 }
 
-static inline int _zbar_thread_is_self (zbar_thread_id_t tid)
-{
+static inline int _zbar_thread_is_self (zbar_thread_id_t tid) {
     return(tid == GetCurrentThreadId());
 }
 
 
 #elif defined(HAVE_LIBPTHREAD)
 
-static inline void _zbar_thread_init (zbar_thread_t *thr)
-{
+static inline void _zbar_thread_init (zbar_thread_t *thr) {
     sigset_t sigs;
     sigfillset(&sigs);
     pthread_sigmask(SIG_BLOCK, &sigs, NULL);
@@ -97,13 +93,11 @@ static inline void _zbar_thread_init (zbar_thread_t *thr)
     _zbar_event_trigger(&thr->activity);
 }
 
-static inline zbar_thread_id_t _zbar_thread_self (void)
-{
+static inline zbar_thread_id_t _zbar_thread_self (void) {
     return(pthread_self());
 }
 
-static inline int _zbar_thread_is_self (zbar_thread_id_t tid)
-{
+static inline int _zbar_thread_is_self (zbar_thread_id_t tid) {
     return(pthread_equal(tid, pthread_self()));
 }
 

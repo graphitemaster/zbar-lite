@@ -37,8 +37,7 @@
 #include "debug.h"
 #include "decoder.h"
 
-zbar_decoder_t *zbar_decoder_create ()
-{
+zbar_decoder_t *zbar_decoder_create () {
     zbar_decoder_t *dcode = calloc(1, sizeof(zbar_decoder_t));
     dcode->buf_alloc = BUFFER_MIN;
     dcode->buf = malloc(dcode->buf_alloc);
@@ -96,8 +95,7 @@ zbar_decoder_t *zbar_decoder_create ()
     return(dcode);
 }
 
-void zbar_decoder_destroy (zbar_decoder_t *dcode)
-{
+void zbar_decoder_destroy (zbar_decoder_t *dcode) {
 #ifdef ENABLE_DATABAR
     if(dcode->databar.segs)
         free(dcode->databar.segs);
@@ -107,8 +105,7 @@ void zbar_decoder_destroy (zbar_decoder_t *dcode)
     free(dcode);
 }
 
-void zbar_decoder_reset (zbar_decoder_t *dcode)
-{
+void zbar_decoder_reset (zbar_decoder_t *dcode) {
     memset(dcode, 0, (long)&dcode->buf_alloc - (long)dcode);
 #ifdef ENABLE_EAN
     ean_reset(&dcode->ean);
@@ -139,8 +136,7 @@ void zbar_decoder_reset (zbar_decoder_t *dcode)
 #endif
 }
 
-void zbar_decoder_new_scan (zbar_decoder_t *dcode)
-{
+void zbar_decoder_new_scan (zbar_decoder_t *dcode) {
     /* soft reset decoder */
     memset(dcode->w, 0, sizeof(dcode->w));
     dcode->lock = 0;
@@ -176,59 +172,49 @@ void zbar_decoder_new_scan (zbar_decoder_t *dcode)
 }
 
 
-zbar_color_t zbar_decoder_get_color (const zbar_decoder_t *dcode)
-{
+zbar_color_t zbar_decoder_get_color (const zbar_decoder_t *dcode) {
     return(get_color(dcode));
 }
 
-const char *zbar_decoder_get_data (const zbar_decoder_t *dcode)
-{
+const char *zbar_decoder_get_data (const zbar_decoder_t *dcode) {
     return((char*)dcode->buf);
 }
 
-unsigned int zbar_decoder_get_data_length (const zbar_decoder_t *dcode)
-{
+unsigned int zbar_decoder_get_data_length (const zbar_decoder_t *dcode) {
     return(dcode->buflen);
 }
 
-int zbar_decoder_get_direction (const zbar_decoder_t *dcode)
-{
+int zbar_decoder_get_direction (const zbar_decoder_t *dcode) {
     return(dcode->direction);
 }
 
 zbar_decoder_handler_t *
 zbar_decoder_set_handler (zbar_decoder_t *dcode,
-                          zbar_decoder_handler_t *handler)
-{
+                          zbar_decoder_handler_t *handler) {
     zbar_decoder_handler_t *result = dcode->handler;
     dcode->handler = handler;
     return(result);
 }
 
 void zbar_decoder_set_userdata (zbar_decoder_t *dcode,
-                                void *userdata)
-{
+                                void *userdata) {
     dcode->userdata = userdata;
 }
 
-void *zbar_decoder_get_userdata (const zbar_decoder_t *dcode)
-{
+void *zbar_decoder_get_userdata (const zbar_decoder_t *dcode) {
     return(dcode->userdata);
 }
 
-zbar_symbol_type_t zbar_decoder_get_type (const zbar_decoder_t *dcode)
-{
+zbar_symbol_type_t zbar_decoder_get_type (const zbar_decoder_t *dcode) {
     return(dcode->type);
 }
 
-unsigned int zbar_decoder_get_modifiers (const zbar_decoder_t *dcode)
-{
+unsigned int zbar_decoder_get_modifiers (const zbar_decoder_t *dcode) {
     return(dcode->modifiers);
 }
 
 zbar_symbol_type_t zbar_decode_width (zbar_decoder_t *dcode,
-                                      unsigned w)
-{
+                                      unsigned w) {
     zbar_symbol_type_t tmp, sym = ZBAR_NONE;
 
     dcode->w[dcode->idx & (DECODE_WINDOW - 1)] = w;
@@ -241,48 +227,48 @@ zbar_symbol_type_t zbar_decode_width (zbar_decoder_t *dcode,
     /* each decoder processes width stream in parallel */
 #ifdef ENABLE_QRCODE
     if(TEST_CFG(dcode->qrf.config, ZBAR_CFG_ENABLE) &&
-       (tmp = _zbar_find_qr(dcode)) > ZBAR_PARTIAL)
+            (tmp = _zbar_find_qr(dcode)) > ZBAR_PARTIAL)
         sym = tmp;
 #endif
 #ifdef ENABLE_EAN
     if((dcode->ean.enable) &&
-       (tmp = _zbar_decode_ean(dcode)))
+            (tmp = _zbar_decode_ean(dcode)))
         sym = tmp;
 #endif
 #ifdef ENABLE_CODE39
     if(TEST_CFG(dcode->code39.config, ZBAR_CFG_ENABLE) &&
-       (tmp = _zbar_decode_code39(dcode)) > ZBAR_PARTIAL)
+            (tmp = _zbar_decode_code39(dcode)) > ZBAR_PARTIAL)
         sym = tmp;
 #endif
 #ifdef ENABLE_CODE93
     if(TEST_CFG(dcode->code93.config, ZBAR_CFG_ENABLE) &&
-       (tmp = _zbar_decode_code93(dcode)) > ZBAR_PARTIAL)
+            (tmp = _zbar_decode_code93(dcode)) > ZBAR_PARTIAL)
         sym = tmp;
 #endif
 #ifdef ENABLE_CODE128
     if(TEST_CFG(dcode->code128.config, ZBAR_CFG_ENABLE) &&
-       (tmp = _zbar_decode_code128(dcode)) > ZBAR_PARTIAL)
+            (tmp = _zbar_decode_code128(dcode)) > ZBAR_PARTIAL)
         sym = tmp;
 #endif
 #ifdef ENABLE_DATABAR
     if(TEST_CFG(dcode->databar.config | dcode->databar.config_exp,
                 ZBAR_CFG_ENABLE) &&
-       (tmp = _zbar_decode_databar(dcode)) > ZBAR_PARTIAL)
+            (tmp = _zbar_decode_databar(dcode)) > ZBAR_PARTIAL)
         sym = tmp;
 #endif
 #ifdef ENABLE_CODABAR
     if(TEST_CFG(dcode->codabar.config, ZBAR_CFG_ENABLE) &&
-       (tmp = _zbar_decode_codabar(dcode)) > ZBAR_PARTIAL)
+            (tmp = _zbar_decode_codabar(dcode)) > ZBAR_PARTIAL)
         sym = tmp;
 #endif
 #ifdef ENABLE_I25
     if(TEST_CFG(dcode->i25.config, ZBAR_CFG_ENABLE) &&
-       (tmp = _zbar_decode_i25(dcode)) > ZBAR_PARTIAL)
+            (tmp = _zbar_decode_i25(dcode)) > ZBAR_PARTIAL)
         sym = tmp;
 #endif
 #ifdef ENABLE_PDF417
     if(TEST_CFG(dcode->pdf417.config, ZBAR_CFG_ENABLE) &&
-       (tmp = _zbar_decode_pdf417(dcode)) > ZBAR_PARTIAL)
+            (tmp = _zbar_decode_pdf417(dcode)) > ZBAR_PARTIAL)
         sym = tmp;
 #endif
 
@@ -299,8 +285,7 @@ zbar_symbol_type_t zbar_decode_width (zbar_decoder_t *dcode,
 
 static inline const unsigned int*
 decoder_get_configp (const zbar_decoder_t *dcode,
-                     zbar_symbol_type_t sym)
-{
+                     zbar_symbol_type_t sym) {
     const unsigned int *config;
     switch(sym) {
 #ifdef ENABLE_EAN
@@ -395,8 +380,7 @@ decoder_get_configp (const zbar_decoder_t *dcode,
 }
 
 unsigned int zbar_decoder_get_configs (const zbar_decoder_t *dcode,
-                                       zbar_symbol_type_t sym)
-{
+                                       zbar_symbol_type_t sym) {
     const unsigned *config = decoder_get_configp(dcode, sym);
     if(!config)
         return(0);
@@ -404,10 +388,9 @@ unsigned int zbar_decoder_get_configs (const zbar_decoder_t *dcode,
 }
 
 static inline int decoder_set_config_bool (zbar_decoder_t *dcode,
-                                           zbar_symbol_type_t sym,
-                                           zbar_config_t cfg,
-                                           int val)
-{
+        zbar_symbol_type_t sym,
+        zbar_config_t cfg,
+        int val) {
     unsigned *config = (void*)decoder_get_configp(dcode, sym);
     if(!config || cfg >= ZBAR_CFG_NUM)
         return(1);
@@ -435,10 +418,9 @@ static inline int decoder_set_config_bool (zbar_decoder_t *dcode,
 }
 
 static inline int decoder_set_config_int (zbar_decoder_t *dcode,
-                                          zbar_symbol_type_t sym,
-                                          zbar_config_t cfg,
-                                          int val)
-{
+        zbar_symbol_type_t sym,
+        zbar_config_t cfg,
+        int val) {
     switch(sym) {
 
 #ifdef ENABLE_I25
@@ -481,15 +463,14 @@ static inline int decoder_set_config_int (zbar_decoder_t *dcode,
 int zbar_decoder_set_config (zbar_decoder_t *dcode,
                              zbar_symbol_type_t sym,
                              zbar_config_t cfg,
-                             int val)
-{
+                             int val) {
     if(sym == ZBAR_NONE) {
         static const zbar_symbol_type_t all[] = {
-	    ZBAR_EAN13, ZBAR_EAN2, ZBAR_EAN5, ZBAR_EAN8,
+            ZBAR_EAN13, ZBAR_EAN2, ZBAR_EAN5, ZBAR_EAN8,
             ZBAR_UPCA, ZBAR_UPCE, ZBAR_ISBN10, ZBAR_ISBN13,
             ZBAR_I25, ZBAR_DATABAR, ZBAR_DATABAR_EXP, ZBAR_CODABAR,
-	    ZBAR_CODE39, ZBAR_CODE93, ZBAR_CODE128, ZBAR_QRCODE, 
-	    ZBAR_PDF417, 0
+            ZBAR_CODE39, ZBAR_CODE93, ZBAR_CODE128, ZBAR_QRCODE,
+            ZBAR_PDF417, 0
         };
         const zbar_symbol_type_t *symp;
         for(symp = all; *symp; symp++)
@@ -510,8 +491,7 @@ static char *decoder_dump = NULL;
 static unsigned decoder_dumplen = 0;
 
 const char *_zbar_decoder_buf_dump (unsigned char *buf,
-                                    unsigned int buflen)
-{
+                                    unsigned int buflen) {
     int dumplen = (buflen * 3) + 12;
     char *p;
     int i;
