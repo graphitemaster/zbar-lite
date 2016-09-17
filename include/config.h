@@ -1,0 +1,21 @@
+#ifndef ZBAR_CONFIG_H
+#define ZBAR_CONFIG_H
+
+#define ZBAR_VERSION_MAJOR 0
+#define ZBAR_VERSION_MINOR 10
+
+#define ENABLE_QRCODE
+#define ENABLE_EAN
+#define ENABLE_EAN
+#define ENABLE_I25
+#define ENABLE_DATABAR
+#define ENABLE_CODABAR
+#define ENABLE_CODE39
+#define ENABLE_CODE93
+#define ENABLE_CODE128
+#define ENABLE_PDF417
+#define ENABLE_QRCODE
+
+#define HAVE_LIBPTHREAD
+
+#endif
