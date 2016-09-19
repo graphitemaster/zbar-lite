@@ -9,9 +9,9 @@
 #include <assert.h>
 
 #include <zbar.h>
-#include "error.h"
+#include <stdint.h>
+
 #include "symbol.h"
-#include "refcnt.h"
 
 #define fourcc zbar_fourcc
 

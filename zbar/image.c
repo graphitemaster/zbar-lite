@@ -1,12 +1,10 @@
 #include <inttypes.h>
+#include <string.h>
 
-#include "error.h"
 #include "image.h"
-#include "refcnt.h"
 
 zbar_image_t *zbar_image_create () {
     zbar_image_t *img = calloc(1, sizeof(zbar_image_t));
-    _zbar_refcnt_init();
     _zbar_image_refcnt(img, 1);
     img->srcidx = -1;
     return(img);
@@ -183,66 +181,4 @@ void zbar_image_set_symbols (zbar_image_t *img,
 
 const zbar_symbol_t *zbar_image_first_symbol (const zbar_image_t *img) {
     return((img->syms) ? img->syms->head : NULL);
-}
-
-typedef struct zimg_hdr_s {
-    uint32_t magic, format;
-    uint16_t width, height;
-    uint32_t size;
-} zimg_hdr_t;
-
-int zbar_image_write (const zbar_image_t *img,
-                      const char *filebase) {
-    int len = strlen(filebase) + 16;
-    char *filename = malloc(len);
-    int n = 0, rc = 0;
-    FILE *f;
-    zimg_hdr_t hdr;
-    strcpy(filename, filebase);
-    if((img->format & 0xff) >= ' ')
-        n = snprintf(filename, len, "%s.%.4s.zimg",
-                     filebase, (char*)&img->format);
-    else
-        n = snprintf(filename, len, "%s.%08" PRIx32 ".zimg",
-                     filebase, img->format);
-    assert(n < len - 1);
-    filename[len - 1] = '\0';
-
-    zprintf(1, "dumping %.4s(%08" PRIx32 ") image to %s\n",
-            (char*)&img->format, img->format, filename);
-
-    f = fopen(filename, "w");
-    if(!f) {
-#ifdef HAVE_ERRNO_H
-        rc = errno;
-        zprintf(1, "ERROR opening %s: %s\n", filename, strerror(rc));
-#else
-        rc = 1;
-#endif
-        goto error;
-    }
-
-    hdr.magic = 0x676d697a;
-    hdr.format = img->format;
-    hdr.width = img->width;
-    hdr.height = img->height;
-    hdr.size = img->datalen;
-
-    if(fwrite(&hdr, sizeof(hdr), 1, f) != 1 ||
-            fwrite(img->data, 1, img->datalen, f) != img->datalen) {
-#ifdef HAVE_ERRNO_H
-        rc = errno;
-        zprintf(1, "ERROR writing %s: %s\n", filename, strerror(rc));
-#else
-        rc = 1;
-#endif
-        fclose(f);
-        goto error;
-    }
-
-    rc = fclose(f);
-
-error:
-    free(filename);
-    return(rc);
 }

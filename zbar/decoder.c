@@ -6,13 +6,6 @@
 
 #include <zbar.h>
 
-#if defined(DEBUG_DECODER) || defined(DEBUG_EAN) || defined(DEBUG_CODE93) || \
-    defined(DEBUG_CODE39) || defined(DEBUG_CODABAR) || defined(DEBUG_I25) || \
-    defined(DEBUG_DATABAR) || defined(DEBUG_CODE128) || \
-    defined(DEBUG_QR_FINDER) || (defined(DEBUG_PDF417) && (DEBUG_PDF417 >= 4))
-# define DEBUG_LEVEL 1
-#endif
-#include "debug.h"
 #include "decoder.h"
 
 zbar_decoder_t *zbar_decoder_create () {
@@ -474,7 +467,7 @@ const char *_zbar_decoder_buf_dump (unsigned char *buf,
     char *p;
     int i;
 
-    if(!decoder_dump || dumplen > decoder_dumplen) {
+    if(!decoder_dump || (unsigned)dumplen > decoder_dumplen) {
         if(decoder_dump)
             free(decoder_dump);
         decoder_dump = malloc(dumplen);
@@ -483,7 +476,7 @@ const char *_zbar_decoder_buf_dump (unsigned char *buf,
     p = decoder_dump +
         snprintf(decoder_dump, 12, "buf[%04x]=",
                  (buflen > 0xffff) ? 0xffff : buflen);
-    for(i = 0; i < buflen; i++)
+    for(i = 0; i < (int)buflen; i++)
         p += snprintf(p, 4, "%s%02x", (i) ? " " : "",  buf[i]);
     return(decoder_dump);
 }

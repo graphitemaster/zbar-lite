@@ -5,10 +5,12 @@
 #include <assert.h>
 
 #include <zbar.h>
-#include "error.h"
 #include "image.h"
 #include "qrcode.h"
 #include "img_scanner.h"
+
+#define zprintf(...)
+
 #if 1
 # define ASSERT_POS \
     assert(p == data + x + y * (intptr_t)w)
@@ -115,7 +117,7 @@ void _zbar_image_scanner_recycle_syms (zbar_image_scanner_t *iscn,
                 sym->syms = NULL;
             }
             for(i = 0; i < RECYCLE_BUCKETS; i++)
-                if(sym->data_alloc < 1 << (i * 2))
+                if(sym->data_alloc < (unsigned)1 << (i * 2))
                     break;
             if(i == RECYCLE_BUCKETS) {
                 assert(sym->data);
@@ -208,7 +210,7 @@ _zbar_image_scanner_alloc_sym (zbar_image_scanner_t *iscn,
 
     if(datalen > 0) {
         sym->datalen = datalen - 1;
-        if(sym->data_alloc < datalen) {
+        if(sym->data_alloc < (unsigned)datalen) {
             if(sym->data)
                 free(sym->data);
             sym->data_alloc = datalen;
@@ -448,6 +450,7 @@ zbar_image_scanner_t *zbar_image_scanner_create () {
 
 #ifndef NO_STATS
 static inline void dump_stats (const zbar_image_scanner_t *iscn) {
+    (void)iscn;
     int i;
     zprintf(1, "symbol sets allocated   = %-4d\n", iscn->stat_syms_new);
     zprintf(1, "    scanner syms in use = %-4d\trecycled  = %-4d\n",
@@ -645,21 +648,21 @@ int zbar_scan_image (zbar_image_scanner_t *iscn,
         int x = 0, y = 0;
 
         int border = (((img->crop_h - 1) % density) + 1) / 2;
-        if(border > img->crop_h / 2)
+        if(border > (int)img->crop_h / 2)
             border = img->crop_h / 2;
         border += img->crop_y;
-        assert(border <= h);
+        assert(border <= (int)h);
         iscn->dy = 0;
 
         movedelta(img->crop_x, border);
         iscn->v = y;
 
-        while(y < cy1) {
+        while(y < (int)cy1) {
             int cx0 = img->crop_x;;
             zprintf(128, "img_x+: %04d,%04d @%p\n", x, y, p);
             iscn->dx = iscn->du = 1;
             iscn->umin = cx0;
-            while(x < cx1) {
+            while(x < (int)cx1) {
                 uint8_t d = *p;
                 movedelta(1, 0);
                 zbar_scan_y(scn, d);
@@ -669,13 +672,13 @@ int zbar_scan_image (zbar_image_scanner_t *iscn,
 
             movedelta(-1, density);
             iscn->v = y;
-            if(y >= cy1)
+            if(y >= (int)cy1)
                 break;
 
             zprintf(128, "img_x-: %04d,%04d @%p\n", x, y, p);
             iscn->dx = iscn->du = -1;
             iscn->umin = cx1;
-            while(x >= cx0) {
+            while(x >= (int)cx0) {
                 uint8_t d = *p;
                 movedelta(-1, 0);
                 zbar_scan_y(scn, d);
@@ -695,19 +698,19 @@ int zbar_scan_image (zbar_image_scanner_t *iscn,
         int x = 0, y = 0;
 
         int border = (((img->crop_w - 1) % density) + 1) / 2;
-        if(border > img->crop_w / 2)
+        if(border > (int)img->crop_w / 2)
             border = img->crop_w / 2;
         border += img->crop_x;
-        assert(border <= w);
+        assert(border <= (int)w);
         movedelta(border, img->crop_y);
         iscn->v = x;
 
-        while(x < cx1) {
+        while(x < (int)cx1) {
             int cy0 = img->crop_y;
             zprintf(128, "img_y+: %04d,%04d @%p\n", x, y, p);
             iscn->dy = iscn->du = 1;
             iscn->umin = cy0;
-            while(y < cy1) {
+            while(y < (int)cy1) {
                 uint8_t d = *p;
                 movedelta(0, 1);
                 zbar_scan_y(scn, d);
@@ -717,13 +720,13 @@ int zbar_scan_image (zbar_image_scanner_t *iscn,
 
             movedelta(density, -1);
             iscn->v = x;
-            if(x >= cx1)
+            if(x >= (int)cx1)
                 break;
 
             zprintf(128, "img_y-: %04d,%04d @%p\n", x, y, p);
             iscn->dy = iscn->du = -1;
             iscn->umin = cy1;
-            while(y >= cy0) {
+            while(y >= (int)cy0) {
                 uint8_t d = *p;
                 movedelta(0, -1);
                 zbar_scan_y(scn, d);

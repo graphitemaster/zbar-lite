@@ -1,10 +1,6 @@
 #include <config.h>
 #include <zbar.h>
 
-#ifdef DEBUG_EAN
-# define DEBUG_LEVEL (DEBUG_EAN)
-#endif
-#include "debug.h"
 #include "decoder.h"
 
 /* partial decode symbol location */
@@ -675,7 +671,7 @@ static inline void postprocess (zbar_decoder_t *dcode,
                  !TEST_CFG(ean_get_config(ean, sym), ZBAR_CFG_EMIT_CHECK)))
             base--;
 
-        for(; j < base && ean->buf[i] >= 0; i++, j++)
+        for(; j < (int)base && ean->buf[i] >= 0; i++, j++)
             dcode->buf[j] = ean->buf[i] + '0';
 
         if(sym == ZBAR_ISBN10 && j == 9 &&

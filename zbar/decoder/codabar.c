@@ -3,10 +3,6 @@
 
 #include <zbar.h>
 
-#ifdef DEBUG_CODABAR
-# define DEBUG_LEVEL (DEBUG_CODABAR)
-#endif
-#include "debug.h"
 #include "decoder.h"
 
 #define NIBUF 6 /* initial scan buffer size */
@@ -349,9 +345,9 @@ _zbar_decode_codabar (zbar_decoder_t *dcode) {
             goto reset;
         }
         unsigned n = codabar->character;
-        if(n < CFG(*codabar, ZBAR_CFG_MIN_LEN) ||
+        if((int)n < CFG(*codabar, ZBAR_CFG_MIN_LEN) ||
                 (CFG(*codabar, ZBAR_CFG_MAX_LEN) > 0 &&
-                 n > CFG(*codabar, ZBAR_CFG_MAX_LEN))) {
+                 (int)n > CFG(*codabar, ZBAR_CFG_MAX_LEN))) {
             dbprintf(2, " [invalid len]\n");
             goto reset;
         }

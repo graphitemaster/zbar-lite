@@ -3,10 +3,6 @@
 
 #include <zbar.h>
 
-#ifdef DEBUG_CODE128
-# define DEBUG_LEVEL (DEBUG_CODE128)
-#endif
-#include "debug.h"
 #include "decoder.h"
 
 #define NUM_CHARS 108           /* total number of character codes */
@@ -230,7 +226,7 @@ static inline signed char decode6 (zbar_decoder_t *dcode) {
     bars = bars * 11 * 4 / s;
     chk = calc_check(c);
     dbprintf(2, " bars=%d chk=%d", bars, chk);
-    if(chk - 7 > bars || bars > chk + 7)
+    if(chk - 7 > (int)bars || (int)bars > chk + 7)
         return(-1);
 
     return(c & 0x7f);
@@ -336,7 +332,7 @@ static inline unsigned char postprocess (zbar_decoder_t *dcode) {
     if(dcode128->direction) {
         /* reverse buffer */
         dbprintf(2, " (rev)");
-        for(i = 0; i < dcode128->character / 2; i++) {
+        for(i = 0; i < (unsigned)dcode128->character / 2; i++) {
             unsigned j = dcode128->character - 1 - i;
             code = dcode->buf[i];
             dcode->buf[i] = dcode->buf[j];
@@ -358,7 +354,7 @@ static inline unsigned char postprocess (zbar_decoder_t *dcode) {
     cexp = (code == START_C) ? 1 : 0;
     dbprintf(2, " start=%c", 'A' + charset);
 
-    for(i = 1, j = 0; i < dcode128->character - 2; i++) {
+    for(i = 1, j = 0; i < (unsigned)dcode128->character - 2; i++) {
         unsigned char code = dcode->buf[i];
         zassert(!(code & 0x80), 1,
                 "i=%x j=%x code=%02x charset=%x cexp=%x %s\n",
@@ -405,7 +401,7 @@ static inline unsigned char postprocess (zbar_decoder_t *dcode) {
                     dcode->modifiers |= MOD(ZBAR_MOD_GS1);
                 else if(i == 2)
                     dcode->modifiers |= MOD(ZBAR_MOD_AIM);
-                else if(i < dcode->code128.character - 3)
+                else if(i < (unsigned)dcode->code128.character - 3)
                     dcode->buf[j++] = 0x1d;
                 /*else drop trailing FNC1 */
             } else if(code >= START_A) {
@@ -512,7 +508,7 @@ zbar_symbol_type_t _zbar_decode_code128 (zbar_decoder_t *dcode) {
     }
     dcode128->width = dcode128->s6;
 
-    zassert(dcode->buf_alloc > dcode128->character, 0,
+    zassert(dcode->buf_alloc > (unsigned)dcode128->character, 0,
             "alloc=%x idx=%x c=%02x %s\n",
             dcode->buf_alloc, dcode128->character, c,
             _zbar_decoder_buf_dump(dcode->buf, dcode->buf_alloc));

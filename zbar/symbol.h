@@ -3,7 +3,15 @@
 
 #include <stdlib.h>
 #include <zbar.h>
-#include "refcnt.h"
+
+typedef int refcnt_t;
+
+static inline int _zbar_refcnt (refcnt_t *cnt,
+                                int delta) {
+    int rc = (*cnt += delta);
+    assert(rc >= 0);
+    return(rc);
+}
 
 #define NUM_SYMS  20
 

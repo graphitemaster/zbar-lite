@@ -1,10 +1,6 @@
 #include <config.h>
 #include <zbar.h>
 
-#ifdef DEBUG_CODE93
-# define DEBUG_LEVEL (DEBUG_CODE93)
-#endif
-#include "debug.h"
 #include "decoder.h"
 
 static const signed char code93_hash[0x40] = {
@@ -167,8 +163,8 @@ check_stop (zbar_decoder_t *dcode) {
     unsigned n = dcode93->character, s = dcode->s6;
     int max_len = CFG(*dcode93, ZBAR_CFG_MAX_LEN);
     if(n < 2 ||
-            n < CFG(*dcode93, ZBAR_CFG_MIN_LEN) ||
-            (max_len && n > max_len))
+            (int)n < CFG(*dcode93, ZBAR_CFG_MIN_LEN) ||
+            (max_len && (int)n > max_len))
         return(decode_abort(dcode, "invalid len"));
 
     if(dcode93->direction) {

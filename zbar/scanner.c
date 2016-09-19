@@ -5,10 +5,7 @@
 
 #include <zbar.h>
 
-#ifdef DEBUG_SCANNER
-# define DEBUG_LEVEL (DEBUG_SCANNER)
-#endif
-#include "debug.h"
+#define dbprintf(...)
 
 #ifndef ZBAR_FIXED
 # define ZBAR_FIXED 5
@@ -120,6 +117,7 @@ static inline unsigned calc_thresh (zbar_scanner_t *scn) {
 
 static inline zbar_symbol_type_t process_edge (zbar_scanner_t *scn,
         int y1) {
+    (void)y1;
     if(!scn->y1_sign)
         scn->last_edge = scn->cur_edge = (1 << ZBAR_FIXED) + ROUND;
     else if(!scn->last_edge)
@@ -179,10 +177,10 @@ zbar_symbol_type_t zbar_scan_y (zbar_scanner_t *scn,
                                 int y) {
     /* FIXME calc and clip to max y range... */
     /* retrieve short value history */
-    register int x = scn->x;
-    register int y0_1 = scn->y0[(x - 1) & 3];
-    register int y0_0 = y0_1;
-    register int y0_2, y0_3, y1_1, y2_1, y2_2;
+    int x = scn->x;
+    int y0_1 = scn->y0[(x - 1) & 3];
+    int y0_0 = y0_1;
+    int y0_2, y0_3, y1_1, y2_1, y2_2;
     zbar_symbol_type_t edge;
     if(x) {
         /* update weighted moving average */
@@ -241,8 +239,9 @@ zbar_symbol_type_t zbar_scan_y (zbar_scanner_t *scn,
             scn->cur_edge += x << ZBAR_FIXED;
             dbprintf(1, "\n");
         }
-    } else
+    } else {
         dbprintf(1, "\n");
+    }
     /* FIXME add fall-thru pass to decoder after heuristic "idle" period
        (eg, 6-8 * last width) */
     scn->x = x + 1;
@@ -258,9 +257,11 @@ void zbar_scanner_get_state (const zbar_scanner_t *scn,
                              int *y1,
                              int *y2,
                              int *y1_thresh) {
-    register int y0_0 = scn->y0[(scn->x - 1) & 3];
-    register int y0_1 = scn->y0[(scn->x - 2) & 3];
-    register int y0_2 = scn->y0[(scn->x - 3) & 3];
+    (void)cur_edge;
+
+    int y0_0 = scn->y0[(scn->x - 1) & 3];
+    int y0_1 = scn->y0[(scn->x - 2) & 3];
+    int y0_2 = scn->y0[(scn->x - 3) & 3];
     zbar_scanner_t *mut_scn;
     if(x) *x = scn->x - 1;
     if(last_edge) *last_edge = scn->last_edge;

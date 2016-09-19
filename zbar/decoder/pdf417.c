@@ -2,10 +2,6 @@
 
 #include <zbar.h>
 
-#ifdef DEBUG_PDF417
-# define DEBUG_LEVEL (DEBUG_PDF417)
-#endif
-#include "debug.h"
 #include "decoder.h"
 
 #include "pdf417_hash.h"
@@ -164,6 +160,7 @@ zbar_symbol_type_t _zbar_decode_pdf417 (zbar_decoder_t *dcode) {
 
     if(get_color(dcode) != dcode417->direction) {
         int c = dcode417->character;
+        (void)c;
         release_lock(dcode, ZBAR_PDF417);
         dcode417->character = -1;
         zassert(get_color(dcode) == dcode417->direction, ZBAR_NONE,

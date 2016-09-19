@@ -3,10 +3,6 @@
 
 #include <zbar.h>
 
-#ifdef DEBUG_CODE39
-# define DEBUG_LEVEL (DEBUG_CODE39)
-#endif
-#include "debug.h"
 #include "decoder.h"
 
 #define NUM_CHARS (0x2c)
@@ -204,7 +200,7 @@ static inline int code39_postprocess (zbar_decoder_t *dcode) {
         dcode->buf[i] = ((dcode->buf[i] < 0x2b)
                          ? code39_characters[(unsigned)dcode->buf[i]]
                          : '?');
-    zassert(i < dcode->buf_alloc, -1, "i=%02x %s\n", i,
+    zassert(i < (int)dcode->buf_alloc, -1, "i=%02x %s\n", i,
             _zbar_decoder_buf_dump(dcode->buf, dcode39->character));
     dcode->buflen = i;
     dcode->buf[i] = '\0';

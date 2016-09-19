@@ -7,7 +7,12 @@
 
 #include <zbar.h>
 
-#include "debug.h"
+#define dbprintf(...) while(0)
+
+#define zassert(condition, retval, format, ...) do {   \
+        if(!(condition))                               \
+            return(retval);                            \
+    } while(0)
 
 #define NUM_CFGS (ZBAR_CFG_MAX_LEN - ZBAR_CFG_MIN_LEN + 1)
 

@@ -50,6 +50,7 @@ const char *zbar_get_symbol_name (zbar_symbol_type_t sym) {
 }
 
 const char *zbar_get_addon_name (zbar_symbol_type_t sym) {
+    (void)sym;
     return("");
 }
 
@@ -251,7 +252,7 @@ enum {
         i = strlen(_st);              \
         memcpy(*buf + n, _st, i + 1); \
         n += i;                       \
-        assert(n <= maxlen);          \
+        assert(n <= (int)maxlen);     \
     } while(0)
 
 #define TMPL_FMT(t, ...) do {                                 \
@@ -259,7 +260,7 @@ enum {
         i = snprintf(*buf + n, maxlen - n, _st, __VA_ARGS__); \
         assert(i > 0);                                        \
         n += i;                                               \
-        assert(n <= maxlen);                                  \
+        assert(n <= (int)maxlen);                             \
     } while(0)
 
 char *zbar_symbol_xml (const zbar_symbol_t *sym,
@@ -276,11 +277,11 @@ char *zbar_symbol_xml (const zbar_symbol_t *sym,
     char binary = ((data[0] == 0xff && data[1] == 0xfe) ||
                    (data[0] == 0xfe && data[1] == 0xff) ||
                    !strncmp(sym->data, "<?xml", 5));
-    for(i = 0; !binary && i < sym->datalen; i++) {
+    for(i = 0; !binary && i < (int)sym->datalen; i++) {
         unsigned char c = sym->data[i];
         binary = ((c < 0x20 && ((~0x00002600 >> c) & 1)) ||
                   (c >= 0x7f && c < 0xa0) ||
-                  (c == ']' && i + 2 < sym->datalen &&
+                  (c == ']' && i + 2 < (int)sym->datalen &&
                    sym->data[i + 1] == ']' &&
                    sym->data[i + 2] == '>'));
     }
@@ -348,7 +349,7 @@ char *zbar_symbol_xml (const zbar_symbol_t *sym,
         TMPL_COPY("\n");
         n += base64_encode(*buf + n, sym->data, sym->datalen);
     }
-    assert(n <= maxlen);
+    assert(n <= (int)maxlen);
 
     TMPL_COPY("]]></data></symbol>");
 
